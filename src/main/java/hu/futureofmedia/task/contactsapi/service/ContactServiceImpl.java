@@ -1,5 +1,8 @@
 package hu.futureofmedia.task.contactsapi.service;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
@@ -22,8 +25,14 @@ public class ContactServiceImpl implements ContactService  {
     }
 
     @Override
-    public void save(Contact contact){
-        contactRepository.save(contact);
+    public void save(ContactDTO contactDTO){
+        contactDTO.setStat(Boolean.TRUE);
+        try {
+            this.checkValidPhoneNumber(contactDTO.getPhoneNumber());
+        } catch (NumberParseException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
@@ -43,9 +52,23 @@ public class ContactServiceImpl implements ContactService  {
                         .filter(e->e.getStat().equals(Boolean.TRUE))
                         .collect(Collectors.toList());
     }
+
+
     @Override
     public ContactDTO findById (Long id){
         return contactMapper.toContactDto(contactRepository.findById(id));
     }
 
+    @Override
+    public boolean checkValidPhoneNumber(String phoneNumber) throws NumberParseException {
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+      try {
+       Phonenumber.PhoneNumber checkPhoneNumber =  phoneUtil.parse(phoneNumber,"HU");
+            return phoneUtil.isValidNumber(checkPhoneNumber);
+        } catch (NumberParseException e) {
+            System.err.println("NumberParseException was thrown: " + e.toString());
+        }
+        return false;
+      //TODO
+    }
 }

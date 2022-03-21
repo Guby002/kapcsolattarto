@@ -16,7 +16,7 @@ public class ContactDTO {
     private Long id;
     private String firstName;
     private String secondName;
-    private String eMail;
+    private String email;
     private String phoneNumber;
     private Company company;
     private String comment;
