@@ -6,14 +6,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Data
 @Entity
-public class Contract {
+@Data
+public class Contact {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private Long id;
@@ -30,7 +29,7 @@ public class Contract {
     @NotBlank
     private String eMail;
 
-    @Column
+    @Column(name="phonenumber")
     private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

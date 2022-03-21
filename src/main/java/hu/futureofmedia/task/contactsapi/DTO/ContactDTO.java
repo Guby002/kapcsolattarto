@@ -1,5 +1,6 @@
 package hu.futureofmedia.task.contactsapi.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.futureofmedia.task.contactsapi.entities.Company;
 import lombok.Data;
 import lombok.Getter;
@@ -10,7 +11,8 @@ import java.util.Date;
 @Data
 @Getter
 @Setter
-public class ContractDTO {
+public class ContactDTO {
+    @JsonIgnore
     private Long id;
     private String firstName;
     private String secondName;
@@ -18,7 +20,9 @@ public class ContractDTO {
     private String phoneNumber;
     private Company company;
     private String comment;
+    @JsonIgnore
     private Boolean stat;
     private Date createDate;
     private Date lastModify;
+
 }
