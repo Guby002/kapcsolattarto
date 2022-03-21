@@ -1,6 +1,6 @@
 package hu.futureofmedia.task.contactsapi;
 
-import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
+import com.google.i18n.phonenumbers.NumberParseException;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Company;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
@@ -14,14 +14,21 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import sun.jvm.hotspot.utilities.Assert;
 
+import javax.validation.constraints.AssertTrue;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import static org.hamcrest.Matchers.anEmptyMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -39,7 +46,7 @@ public class TestForPaging {
     @MockBean
     private ContactService contactService;
     @BeforeEach
-    public void setup() throws Exception {
+    public void setup(){
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
     @Test
@@ -53,13 +60,13 @@ public class TestForPaging {
 
         contracts.add(contractMapper.toContactForListDto(contact));
         Mockito.when(contactService.findTenForUser(1)).thenReturn(contracts);
-        mockMvc.perform(get("/page/{pageNo}",1))
+        mockMvc.perform(get("/listpage/{pageNo}",1))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$[0].Name").value("Nagyon Almos"));
 
     }
- /*   @Test
+    @Test
     public void testGetExampleFalse() throws Exception {
         List<ContactForListDTO> contracts = new ArrayList<>();
         ContactMapperImpl contractMapper = new ContactMapperImpl();
@@ -69,11 +76,13 @@ public class TestForPaging {
         Contact contact = new Contact(1L,"Nagyon","Almos","ha@hah.hu","1120120",company,"ha",false,d1,d2);
 
         contracts.add(contractMapper.toContactForListDto(contact));
-        M
-     /*   mockMvc.perform(get("/page/{pageNo}",1))
-                .andExpect(status().isNotFound());
+        MvcResult result = mockMvc.perform(get("/listpage/{pageNo}",1))
+                .andExpect(status().isOk())
+                .andReturn();
+        String actualJson =result.getResponse().getContentAsString();
+        assertEquals("[]", actualJson);
 
-    }*/
+    }
     @Test
     public void testForSecondPageExample() throws Exception {
         List<ContactForListDTO> contracts = new ArrayList<>();
@@ -81,7 +90,7 @@ public class TestForPaging {
         Company company=new Company(1L, "as");
         Date d1 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-1-1");
         Date d2 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-1-20");
-        Contact contact=new Contact();
+        Contact contact= new Contact();
         for(long l=0;l<10;l++) {
             contact = new Contact(l, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", true, d1, d2);
             contracts.add(contractMapper.toContactForListDto(contact));
@@ -91,9 +100,19 @@ public class TestForPaging {
             contact = new Contact(12L, "Focis", "Almos", "ha@hah.hu", "1120120", company, "ha", true, d1, d2);
         contracts.add(contractMapper.toContactForListDto(contact));
         Mockito.when(contactService.findTenForUser(2)).thenReturn(contracts);
-        mockMvc.perform(get("/page/{pageNo}",2))
+        mockMvc.perform(get("/listpage/{pageNo}",2))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$[11].firstName").value("Focis"));
+                .andExpect(jsonPath("$[11].Name").value("Focis Almos"));
+    }
+    @Test
+    public void testPhoneNumberValidation(){
+        boolean checker = false;
+        try {
+           checker = contactService.checkValidPhoneNumber("+36302055441");
+        } catch (NumberParseException e) {
+            e.printStackTrace();
+        }
+        assertEquals(Boolean.TRUE,checker);
     }
 }

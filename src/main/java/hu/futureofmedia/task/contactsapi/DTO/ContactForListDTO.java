@@ -29,7 +29,7 @@ public class ContactForListDTO {
         public String getCompanyName() {
                 return(company.getName());
         }
-        private String eMail;
+        private String email;
         private String phoneNumber;
 //-------------Eddig
         @JsonIgnore

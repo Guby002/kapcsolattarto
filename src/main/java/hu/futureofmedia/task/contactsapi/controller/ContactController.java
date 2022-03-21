@@ -5,6 +5,8 @@ import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.service.ContactService;
 import io.swagger.v3.oas.annotations.info.Contact;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,24 +18,24 @@ public class ContactController {
         this.contactService = contactService;
     }
 
-    @GetMapping("/page/{pageNo}")
+    @GetMapping("listpage/{pageNo}")
     public List<ContactForListDTO> findTenForUser(@PathVariable int pageNo){
         return contactService.findTenForUser(pageNo);
     }
 
-    @GetMapping("page/{id}")
+    @GetMapping("singleuser/{id}")
     public ContactDTO findContactById(@PathVariable Long id){
         return contactService.findById(id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public void delete(@PathVariable Long id) {
         contactService.delete(id);
     }
-    /*
-    @PostMapping("listpage/addContract")
-    public ResponseEntity<ContactDTO> createContractor(@RequestBody ContactDTO contractDTO){
-        contactService.save(contractMapper);
-        return ResponseEntity.status(HttpStatus.CREATED).body(contractDTO);
-    }*/
+
+    @PostMapping("page/addContact")
+    public ResponseEntity<ContactDTO> createContractor(@RequestBody ContactDTO contactDTO){
+        contactService.save(contactDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(contactDTO);
+    }
 }
