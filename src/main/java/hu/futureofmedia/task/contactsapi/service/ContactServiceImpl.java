@@ -9,8 +9,11 @@ import hu.futureofmedia.task.contactsapi.entities.Contact;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.PreUpdate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,12 +30,29 @@ public class ContactServiceImpl implements ContactService  {
     @Override
     public void save(ContactDTO contactDTO){
         contactDTO.setStat(Boolean.TRUE);
-        try {
-            this.checkValidPhoneNumber(contactDTO.getPhoneNumber());
-        } catch (NumberParseException e) {
-            e.printStackTrace();
-        }
+        contactRepository.save(contactMapper.toContact(contactDTO));
 
+    }
+    @Override
+    public boolean validatePhoneNumber(String phoneNumber) throws NumberParseException {
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        Phonenumber.PhoneNumber numberProto = phoneNumberUtil.parse(phoneNumber, "HU");
+        return phoneNumberUtil.isValidNumber(numberProto);
+    }
+
+    @Override
+    @PreUpdate
+    public ResponseEntity update(Long id , ContactDTO contactDTO) {
+        if(contactRepository.findById(id).isPresent()) {
+            contactDTO.setStat(Boolean.TRUE);
+            contactDTO.setId(id);
+            contactRepository.delete(contactMapper.toContact(contactDTO));
+            contactRepository.save(contactMapper.toContact(contactDTO));
+            return ResponseEntity.status(HttpStatus.OK).body("Updated");
+        }
+        else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Can't update contactor");
+        }
     }
 
     @Override
@@ -52,23 +72,8 @@ public class ContactServiceImpl implements ContactService  {
                         .filter(e->e.getStat().equals(Boolean.TRUE))
                         .collect(Collectors.toList());
     }
-
-
     @Override
     public ContactDTO findById (Long id){
         return contactMapper.toContactDto(contactRepository.findById(id));
-    }
-
-    @Override
-    public boolean checkValidPhoneNumber(String phoneNumber) throws NumberParseException {
-        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-      try {
-       Phonenumber.PhoneNumber checkPhoneNumber =  phoneUtil.parse(phoneNumber,"HU");
-            return phoneUtil.isValidNumber(checkPhoneNumber);
-        } catch (NumberParseException e) {
-            System.err.println("NumberParseException was thrown: " + e.toString());
-        }
-        return false;
-      //TODO
     }
 }
