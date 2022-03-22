@@ -6,7 +6,10 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,9 +18,9 @@ import java.util.Date;
 @EnableJpaAuditing
 @Data
 @Table(name="contact")
-public class Contact {
+public class Contact  implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
     @Column(name = "first_name")
@@ -28,6 +31,7 @@ public class Contact {
     @NotBlank(message = "Vezetéknév kötelező")
     private String secondName;
 
+    @Email
     @Column(name = "email")
     @NotBlank(message = "E-mail kötelező")
     private String email;
@@ -46,11 +50,19 @@ public class Contact {
     private Boolean stat;
 
     @CreatedDate
-    @Column(name = "created_date", updatable = false)
-    private Date createdDate;
+    @Column(name = "created_date", nullable = false)
+    private Date createDate;;
 
     @LastModifiedDate
     @Column(name = "last_modified_date", nullable = false)
     private Date lastModify;
+
+    @PreUpdate
+    @PrePersist
+    protected void setNewLastModifiedDate() {
+        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        this.lastModify = date;
+    }
 
 }

@@ -31,7 +31,8 @@ public class ContactForListDTO {
         }
         private String email;
         private String phoneNumber;
-//-------------Eddig
+
+        //-------------Eddig
         @JsonIgnore
         private Boolean stat;
 }
