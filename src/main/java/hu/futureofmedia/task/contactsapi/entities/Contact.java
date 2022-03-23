@@ -18,7 +18,7 @@ import java.util.Date;
 @EnableJpaAuditing
 @Data
 @Table(name="contact")
-public class Contact  implements Serializable {
+public class Contact{
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;

@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import hu.futureofmedia.task.contactsapi.entities.Company;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.Date;
 @Data
 @Getter
 @Setter
+@AllArgsConstructor
 public class ContactDTO {
     @JsonIgnore
     private Long id;
