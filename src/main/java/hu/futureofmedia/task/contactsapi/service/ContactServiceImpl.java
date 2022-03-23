@@ -6,6 +6,7 @@ import com.google.i18n.phonenumbers.Phonenumber;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
+import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.PreUpdate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,7 +75,12 @@ public class ContactServiceImpl implements ContactService  {
                         .collect(Collectors.toList());
     }
     @Override
-    public ContactDTO findById (Long id){
-        return contactMapper.toContactDto(contactRepository.findById(id));
+    public ResponseEntity<ContactDTO> findById (Long id) {
+        Optional<ContactDTO> user = Optional.ofNullable(contactMapper.toContactDto(contactRepository.getById(id)));
+        if (user.isPresent()) {
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        } else {
+            throw new RecordNotFoundException();
+        }
     }
 }

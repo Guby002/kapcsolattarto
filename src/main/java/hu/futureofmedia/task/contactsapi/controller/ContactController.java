@@ -5,7 +5,7 @@ import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 
 import hu.futureofmedia.task.contactsapi.service.ContactService;
-import io.restassured.response.Response;
+import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,23 +27,24 @@ public class ContactController {
     }
 
     @GetMapping("/contacts/singlepage/{id}")
-    public ContactDTO findContactById(@PathVariable("id") Long id){
+    public ResponseEntity<ContactDTO> findContactById(@PathVariable("id") Long id) throws RecordNotFoundException {
         return contactService.findById(id);
     }
 
-    @DeleteMapping("/contacts/{id}")
+    @DeleteMapping("/contacts/singlepage/detele/{id}")
     public void delete(@PathVariable Long id) {
         contactService.delete(id);
     }
 
-    @PostMapping("/contacts")
+    @PostMapping(value="/contacts/singlepage")
     public ResponseEntity createContractor(@Valid @RequestBody ContactDTO contactDTO) throws NumberParseException {
         if(contactService.validatePhoneNumber(contactDTO.getPhoneNumber())) {
             contactService.save(contactDTO);
+            return ResponseEntity.status((HttpStatus.CREATED)).body("jooo");
         }
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Can't create contactor");
     }
-    @PutMapping("/contacts/{id}")
+    @PutMapping("/contacts/singlepage/modify/{id}")
     public ResponseEntity updateContactor(@PathVariable ("id") Long id,@Valid @RequestBody ContactDTO contactDTO) throws NumberParseException {
         if(contactService.validatePhoneNumber(contactDTO.getPhoneNumber())) {
             return contactService.update(id,contactDTO);
