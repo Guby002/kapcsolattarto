@@ -2,10 +2,14 @@ package hu.futureofmedia.task.contactsapi.service;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
+import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -16,60 +20,46 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ContactServiceImpl implements ContactService  {
-    private ContactMapper contactMapper;
-    private ContactRepository contactRepository;
+    private final ContactMapper contactMapper;
+    private final ContactRepository contactRepository;
 
-    public ContactServiceImpl(ContactRepository contactRepository, ContactMapper contactMapper) {
-        this.contactRepository = contactRepository;
-        this.contactMapper = contactMapper;
-    }
 
     @Override
-    public void save(ContactDTO contactDTO){
-        contactDTO.setStat(Boolean.TRUE);
-        contactRepository.save(contactMapper.toContact(contactDTO));
-
+    //vissza id
+    public Long save(ContactDTO contactDTO){
+       contactRepository.save(contactMapper.updateContactFromContactDTO(contactDTO));
+        return 1L      ;
     }
     @Override
     @PreUpdate
-    public ResponseEntity update(Long id , ContactDTO contactDTO) {
+    public Long update(Long id , ContactDTO contactDTO) {
         if(contactRepository.findById(id).isPresent()) {
-            contactDTO.setStat(Boolean.TRUE);
-            contactDTO.setId(id);
-            contactRepository.delete(contactMapper.toContact(contactDTO));
-            contactRepository.save(contactMapper.toContact(contactDTO));
-            return ResponseEntity.status(HttpStatus.OK).body("Updated");
+            //++mapper update
+            return contactRepository.save(contactMapper.toContact(contactDTO)).getId();
         }
-        else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Can't update contactor");
-        }
+        return null;
     }
 
     @Override
     public void delete(Long id) {
         contactRepository.deleteById(id);
+        //státusz
     }
 
 
     @Override
     public List<ContactForListDTO> findTenForUser(int pageNo) {
-        List<Contact> contacts = contactRepository.findAll();
-
-        return contactMapper.toContactForListListDto(contacts)
-                        .stream()
-                        .skip((pageNo-1) * 10)
-                        .limit(10)
-                        .filter(e->e.getStat().equals(Boolean.TRUE))
-                        .collect(Collectors.toList());
+    //    return contactRepository.findContactsByStatus(Status.ACTIVE,Pageable pageable);
     }
     @Override
-    public ResponseEntity<ContactDTO> findById (Long id) {
-        Optional<ContactDTO> contactDTO = Optional.ofNullable(contactMapper.toContactDto(contactRepository.getById(id)));
+    public ContactDTO findById (Long id) {
+        Optional<ContactDTO> contactDTO = Optional.ofNullable(contactMapper.toContactDto(
+                contactRepository.findById(id).orElseThrow(RecordNotFoundException::new)));
         if (contactDTO.isPresent()) {
-            return new ResponseEntity<>(contactDTO.get(), HttpStatus.OK);
-        } else {
-            throw new RecordNotFoundException();
+            return contactDTO.get();
         }
+        return null;
     }
 }

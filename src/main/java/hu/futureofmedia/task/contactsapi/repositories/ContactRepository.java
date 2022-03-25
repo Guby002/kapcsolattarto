@@ -1,12 +1,14 @@
 package hu.futureofmedia.task.contactsapi.repositories;
 
+import antlr.collections.List;
+import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
+import hu.futureofmedia.task.contactsapi.entities.Status;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
 
 
 public interface ContactRepository extends JpaRepository<Contact, Long> {
-    void deleteById(Long id);
-    Optional<Contact> findById(Long id);
+   // public Pageable<ContactForListDTO> findContactsByStatus(Status status, Pageable pageable);
 }

@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi.service;
 
-import com.google.i18n.phonenumbers.NumberParseException;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
@@ -13,10 +12,10 @@ public interface ContactService {
 
     void delete(Long id);
     List<ContactForListDTO> findTenForUser(int pageNo);
-    ResponseEntity<ContactDTO> findById(Long id) throws RecordNotFoundException;
+    ContactDTO findById(Long id) throws RecordNotFoundException;
 
-    void save(ContactDTO contactDTO);
+    Long save(ContactDTO contactDTO);
 
 
-    ResponseEntity<ContactDTO> update(Long id, ContactDTO contactDTO);
+    Long update(Long id, ContactDTO contactDTO);
 }

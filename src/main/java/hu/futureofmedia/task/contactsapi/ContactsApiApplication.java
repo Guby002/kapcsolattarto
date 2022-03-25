@@ -10,7 +10,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @SpringBootApplication
 public class ContactsApiApplication {
 
-    @Bean
+/*    @Bean
     public MessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasename("classpath:messages");
@@ -23,7 +23,7 @@ public class ContactsApiApplication {
         LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
         bean.setValidationMessageSource(messageSource());
         return bean;
-    }
+    }*/
     public static void main(String[] args) {
         SpringApplication.run(ContactsApiApplication.class, args);
     }

@@ -1,19 +1,28 @@
 package hu.futureofmedia.task.contactsapi.mapper;
 
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
+import hu.futureofmedia.task.contactsapi.entities.Company;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
+import hu.futureofmedia.task.contactsapi.service.ContactService;
+import hu.futureofmedia.task.contactsapi.validator.ContactNumberValidator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.ui.Model;
 import uk.co.jemos.podam.api.DefaultClassInfoStrategy;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ContactMapperTest {
     private static ContactMapper mapper;
-
+    private ContactService contactService;
     private static PodamFactory podamFactory;
     @BeforeAll
     public static void setUp() {
@@ -60,14 +69,17 @@ public class ContactMapperTest {
                 }
         );
     }
-    @Test
+  /* @Test
     void phoneNumberValidationNotANumber() throws Exception {
-        String  phoneNumber ="a";
-        assertFalse(ContactMapper.validatePhoneNumber( phoneNumber));
+        ContactMapperImpl contractMapper = new ContactMapperImpl();
+        Company company = new Company(1L, "as");
+        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", true, d1, d2);
+        contactService.save(contractMapper.toContactDto(contact));
+
     }
     @Test
     void phoneNumberValidation() throws Exception {
         String phoneNumber = "302055441";
-        assertTrue(ContactMapper.validatePhoneNumber( phoneNumber));
-    }
+        assertTrue(ContactNumberValidator.validatePhoneNumber( phoneNumber));
+    }*/
 }

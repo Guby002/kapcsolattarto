@@ -10,13 +10,14 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
+@Getter
 @Builder
 @Entity
-@EnableJpaAuditing
-@Data
 @Table(name="contact")
 public class Contact{
     @Id
@@ -24,17 +25,14 @@ public class Contact{
     private Long id;
 
     @Column(name = "first_name")
-    @NotBlank(message = "Keresztnév kötelező")
     private String firstName;
 
     @Column(name = "second_name")
-    @NotBlank(message = "Vezetéknév kötelező")
     private String secondName;
 
     @Email
     @Column(name = "email")
-    @NotBlank(message = "E-mail kötelező")
-    private String email;
+    String email;
 
     @Column(name="phonenumber")
     private String phoneNumber;
@@ -47,22 +45,17 @@ public class Contact{
     private String comment;
 
     @Column(nullable = false)
-    private Boolean stat;
+    private Status status;
 
-    @CreatedDate
     @Column(name = "created_date", nullable = false)
-    private Date createDate;;
+    private ZonedDateTime createDate;;
 
-    @LastModifiedDate
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModify;
+    @Column(name = "last_modified_date_time", nullable = false)
+    private ZonedDateTime lastModify;
 
     @PreUpdate
-    @PrePersist
     protected void setNewLastModifiedDate() {
-        SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-        Date date = new Date(System.currentTimeMillis());
-        this.lastModify = date;
+        this.lastModify=ZonedDateTime.now();
     }
 
 }

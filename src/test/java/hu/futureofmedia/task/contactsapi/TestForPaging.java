@@ -43,7 +43,7 @@ public class TestForPaging {
     public void setup(){
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
-    @Test
+ /*   @Test
     public void testGetExample() throws Exception {
         List<ContactForListDTO> contracts = new ArrayList<>();
         ContactMapperImpl contractMapper = new ContactMapperImpl();
@@ -99,5 +99,5 @@ public class TestForPaging {
                 .andDo(print())
                 .andExpect(jsonPath("$[11].Name").value("Focis Almos"));
     }
-
+*/
 }
