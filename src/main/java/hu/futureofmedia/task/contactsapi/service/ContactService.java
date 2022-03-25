@@ -17,7 +17,6 @@ public interface ContactService {
 
     void save(ContactDTO contactDTO);
 
-    boolean validatePhoneNumber(String phoneNumber) throws NumberParseException;
 
     ResponseEntity<ContactDTO> update(Long id, ContactDTO contactDTO);
 }
