@@ -9,7 +9,7 @@ import uk.co.jemos.podam.api.DefaultClassInfoStrategy;
 import uk.co.jemos.podam.api.PodamFactory;
 import uk.co.jemos.podam.api.PodamFactoryImpl;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ContactMapperTest {
     private static ContactMapper mapper;
@@ -27,7 +27,7 @@ public class ContactMapperTest {
 
         podamFactory.setClassStrategy(classInfoStrategy);
 
-        mapper = (ContactMapper) new ContactMapperImpl();
+        mapper =new ContactMapperImpl();
     }
     @Test
     void testContractMappertoContractDTO(){
@@ -60,5 +60,14 @@ public class ContactMapperTest {
                 }
         );
     }
-
+    @Test
+    void phoneNumberValidationNotANumber() throws Exception {
+        String  phoneNumber ="a";
+        assertFalse(ContactMapper.validatePhoneNumber( phoneNumber));
+    }
+    @Test
+    void phoneNumberValidation() throws Exception {
+        String phoneNumber = "302055441";
+        assertTrue(ContactMapper.validatePhoneNumber( phoneNumber));
+    }
 }

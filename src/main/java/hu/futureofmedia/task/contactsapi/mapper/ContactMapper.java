@@ -1,5 +1,8 @@
 package hu.futureofmedia.task.contactsapi.mapper;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
@@ -20,4 +23,15 @@ public interface ContactMapper {
     ContactForListDTO toContactForListDto (Contact contact);
 
     ContactDTO toContactDto(Optional<Contact> byId);
+
+    static boolean validatePhoneNumber(String phoneNumber){
+        PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+        try {
+            Phonenumber.PhoneNumber swissNumberProto = phoneUtil.parse(phoneNumber, "HU");
+            return (phoneUtil.isValidNumber(swissNumberProto)); // returns true
+        } catch (NumberParseException e) {
+            System.err.println("NumberParseException was thrown: " + e.toString());
+            return false;
+        }
+    }
 }

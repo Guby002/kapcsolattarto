@@ -1,8 +1,4 @@
 package hu.futureofmedia.task.contactsapi.service;
-
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
@@ -35,13 +31,6 @@ public class ContactServiceImpl implements ContactService  {
         contactRepository.save(contactMapper.toContact(contactDTO));
 
     }
-    @Override
-    public boolean validatePhoneNumber(String phoneNumber) throws NumberParseException {
-        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-        Phonenumber.PhoneNumber numberProto = phoneNumberUtil.parse(phoneNumber, "HU");
-        return phoneNumberUtil.isValidNumber(numberProto);
-    }
-
     @Override
     @PreUpdate
     public ResponseEntity update(Long id , ContactDTO contactDTO) {
@@ -76,9 +65,9 @@ public class ContactServiceImpl implements ContactService  {
     }
     @Override
     public ResponseEntity<ContactDTO> findById (Long id) {
-        Optional<ContactDTO> user = Optional.ofNullable(contactMapper.toContactDto(contactRepository.getById(id)));
-        if (user.isPresent()) {
-            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        Optional<ContactDTO> contactDTO = Optional.ofNullable(contactMapper.toContactDto(contactRepository.getById(id)));
+        if (contactDTO.isPresent()) {
+            return new ResponseEntity<>(contactDTO.get(), HttpStatus.OK);
         } else {
             throw new RecordNotFoundException();
         }
