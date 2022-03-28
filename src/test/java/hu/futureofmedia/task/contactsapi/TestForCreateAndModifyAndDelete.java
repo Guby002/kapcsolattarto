@@ -1,6 +1,7 @@
 package hu.futureofmedia.task.contactsapi;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.entities.Company;
@@ -28,6 +29,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -35,6 +39,7 @@ import java.util.*;
 import static java.time.ZonedDateTime.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
@@ -54,19 +59,21 @@ public class TestForCreateAndModifyAndDelete {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext).build();
     }
 
-  /*  @Test
+    @Test
     public void whenPutRequestToContactorsAndValidContactor_thenCorrectResponse() throws Exception {
         Company company = new Company(1L, "as");
-        ObjectMapper objectMapper = new ObjectMapper();
-        Date d1 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-1-1");
-        Date d2 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-1-20");
-        ContactDTO contactDTO = new ContactDTO(1L, "AJ", "Almos", "ha@hah.hu", "302055441", company, "ha", true, d1, d2);
-        ContactDTO modifiedContactDTO = new ContactDTO(2L, "New", "Almos", "ha@hah.hu", "302055441", company, "ha", true, d1, d2);
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
+        ContactDTO contactDTO = new ContactDTO("Old", "Almos", "ha@hah.hu", "302055441", company, "ha",  d1, d2);
+        ContactDTO modifiedContactDTO = new ContactDTO("New", "Almos", "ha@hah.hu", "302055441", company, "ha",  d1, d2);
         String json = objectMapper.writeValueAsString(modifiedContactDTO);
         System.out.println(json);
         contactService.save(contactDTO);
 
-        this.mockMvc.perform(put("/contacts/singlepage/modify/{id}", 1L)
+        this.mockMvc.perform(put("/contacts/{id}", 1L)
                 .contentType("application/json")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,17 +82,19 @@ public class TestForCreateAndModifyAndDelete {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
-*/
+
     @Test
     public void whenPostRequestToContactorsAndValidContactor_thenCorrectResponse() throws Exception {
         Company company = new Company(1L, "as");
-        ObjectMapper objectMapper = new ObjectMapper();
-        ZonedDateTime d2 = ZonedDateTime.now();
-        ZonedDateTime d1 = ZonedDateTime.now();
-        ContactDTO contactDTO = new ContactDTO( "Nagyon", "Almos", "ha@hah.hu", "1á120", company, "ha", d2, d1);
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
+        ContactDTO contactDTO = new ContactDTO( "Nagyon", "Almos", "ha@hah.hu", "1121120", company, "ha", d2, d1);
         String json = objectMapper.writeValueAsString(contactDTO);
         MockHttpServletRequestBuilder builder =
-                post("/contacts/singlepage")
+                post("/contacts")
                         .contentType("application/json")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,32 +102,33 @@ public class TestForCreateAndModifyAndDelete {
                         .characterEncoding("utf-8");
         mockMvc.perform(builder)
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isCreated());
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(jsonPath("$.firstName").value("Nagyon"));
     }
 
     @Test
     public void whenGetRequestToContactorsAndValidId_thenCorrectResponse() throws Exception {
         ContactMapperImpl contractMapper = new ContactMapperImpl();
         Company company = new Company(1L, "as");
-        ZonedDateTime d2 = ZonedDateTime.now();
-        ZonedDateTime d1 = ZonedDateTime.now();
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
         System.out.println(d1);
-        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1á120", company, "ha", Status.ACTIVE, d1, d2);
+        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "11231120", company, "ha", Status.ACTIVE, d1, d2);
         contactService.save(contractMapper.toContactDto(contact));
-        mockMvc.perform(MockMvcRequestBuilders.get("/contacts/{id}", 1))
+        mockMvc.perform(MockMvcRequestBuilders.get("/contacts/{id}", 1)).andDo(print())
                 .andExpect(status().isOk());
     }
-/*
+
     @Test
     public void whenDeleteRequestToContactorsAndValidId_thenCorrectResponse() throws Exception {
         ContactMapperImpl contractMapper = new ContactMapperImpl();
         Company company = new Company(1L, "as");
-        Date d1 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-1-1");
-        Date d2 = new SimpleDateFormat("yyyy-MM-dd").parse("2000-1-20");
-        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", false, d1, d2);
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
+        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
         contactService.save(contractMapper.toContactDto(contact));
-        mockMvc.perform(MockMvcRequestBuilders.delete("/contacts/singlepage/detele/{id}", 1))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/contacts/{id}", 1)).andDo(print())
                 .andExpect(status().isOk());
-    }*/
+    }
 
 }

@@ -14,7 +14,7 @@ public interface ContactService {
     List<ContactForListDTO> findTenForUser(int pageNo);
     ContactDTO findById(Long id) throws RecordNotFoundException;
 
-    Long save(ContactDTO contactDTO);
+    void save(ContactDTO contactDTO);
 
 
     Long update(Long id, ContactDTO contactDTO);

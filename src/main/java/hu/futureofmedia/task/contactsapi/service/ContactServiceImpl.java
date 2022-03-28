@@ -7,11 +7,8 @@ import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.PreUpdate;
@@ -28,30 +25,33 @@ public class ContactServiceImpl implements ContactService  {
 
     @Override
     //vissza id
-    public Long save(ContactDTO contactDTO){
-       contactRepository.save(contactMapper.updateContactFromContactDTO(contactDTO));
-        return 1L      ;
+    public void save(ContactDTO contactDTO){
+        contactRepository.save(contactMapper.updateContactFromContactDTO(contactDTO)).setStatus(Status.ACTIVE);
     }
+
     @Override
     @PreUpdate
     public Long update(Long id , ContactDTO contactDTO) {
         if(contactRepository.findById(id).isPresent()) {
             //++mapper update
-            return contactRepository.save(contactMapper.toContact(contactDTO)).getId();
+            contactRepository.save(contactMapper.updateContactFromContactDTO(contactDTO)).setStatus(Status.ACTIVE);
+
         }
         return null;
     }
 
     @Override
     public void delete(Long id) {
-        contactRepository.deleteById(id);
-        //státusz
+        if(contactRepository.findById(id).isPresent()) {
+            contactRepository.getById(id).setStatus(Status.DELETED);
+        }
     }
-
-
     @Override
     public List<ContactForListDTO> findTenForUser(int pageNo) {
-    //    return contactRepository.findContactsByStatus(Status.ACTIVE,Pageable pageable);
+        if(pageNo< 1 ) pageNo=1;
+        Pageable pageSortByName = PageRequest.of(pageNo, 10,Sort.by("firstName"));
+        Page <Contact> p = contactRepository. findAllByStatus(Status.ACTIVE,pageSortByName);
+        return contactMapper.toContactForListListDto(p.stream().collect(Collectors.toList()));
     }
     @Override
     public ContactDTO findById (Long id) {
