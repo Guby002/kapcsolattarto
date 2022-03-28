@@ -44,7 +44,7 @@ public class Contact{
     @Column
     private String comment;
 
-    @Column(nullable = false)
+
     private Status status;
 
     @Column(name = "created_date", nullable = false)

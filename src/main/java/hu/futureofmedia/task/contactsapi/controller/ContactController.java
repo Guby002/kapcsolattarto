@@ -44,7 +44,7 @@ public class ContactController {
     @ResponseStatus(HttpStatus.CREATED)
     public String createContractor(@Valid @RequestBody ContactDTO contactDTO, BindingResult result, Model m){
         if(result.hasErrors()) {
-            return "phoneHome";
+            return result.getFieldErrors().toString();
         }
         m.addAttribute("message", "Successfully saved phone: "
                 + contactDTO.toString());
