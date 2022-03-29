@@ -13,6 +13,7 @@ import hu.futureofmedia.task.contactsapi.service.ContactService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,8 +68,8 @@ public class TestForCreateAndModifyAndDelete {
                 .build();
         ZonedDateTime d2 = now();
         ZonedDateTime d1 = now();
-        ContactDTO contactDTO = new ContactDTO("Old", "Almos", "ha@hah.hu", "302055441", company, "ha",  d1, d2);
-        ContactDTO modifiedContactDTO = new ContactDTO("New", "Almos", "ha@hah.hu", "302055441", company, "ha",  d1, d2);
+        ContactDTO contactDTO = new ContactDTO(1L,"Old", "Almos", "ha@hah.hu", "302055441", company, "ha",Status.ACTIVE,  d1, d2);
+        ContactDTO modifiedContactDTO = new ContactDTO(1L,"New", "Almos", "ha@hah.hu", "302055441", company, "ha",Status.ACTIVE,  d1, d2);
         String json = objectMapper.writeValueAsString(modifiedContactDTO);
         System.out.println(json);
         contactService.save(contactDTO);
@@ -91,7 +92,8 @@ public class TestForCreateAndModifyAndDelete {
                 .build();
         ZonedDateTime d2 = now();
         ZonedDateTime d1 = now();
-        ContactDTO contactDTO = new ContactDTO( "Nagyon", "Almos", "ha@hah.hu", "1121120", company, "ha", d2, d1);
+        ContactDTO contactDTO = new ContactDTO(1L,"Old", "Almos", "ha@hah.hu", "302055441", company, "ha",Status.ACTIVE,  d1, d2);
+        contactService.save(contactDTO);
         String json = objectMapper.writeValueAsString(contactDTO);
         MockHttpServletRequestBuilder builder =
                 post("/contacts")
@@ -102,8 +104,7 @@ public class TestForCreateAndModifyAndDelete {
                         .characterEncoding("utf-8");
         mockMvc.perform(builder)
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(jsonPath("$.firstName").value("Nagyon"));
+                .andExpect(MockMvcResultMatchers.status().isCreated());
     }
 
     @Test
@@ -115,7 +116,8 @@ public class TestForCreateAndModifyAndDelete {
         System.out.println(d1);
         Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "11231120", company, "ha", Status.ACTIVE, d1, d2);
         contactService.save(contractMapper.toContactDto(contact));
-        mockMvc.perform(MockMvcRequestBuilders.get("/contacts/{id}", 1)).andDo(print())
+        mockMvc.perform(MockMvcRequestBuilders.get("/contacts/{id}",1))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

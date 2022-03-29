@@ -57,11 +57,12 @@ public class TestForPaging {
         Contact contact = new Contact(1L,"Nagyon","Almos","ha@hah.hu","1120120",company,"ha",Status.ACTIVE,d1,d2);
 
         contracts.add(contractMapper.toContactForListDto(contact));
+        contactService.save(contractMapper.toContactDto(contact));
         Mockito.when(contactService.findTenForUser(1)).thenReturn(contracts);
-        mockMvc.perform(get("/contacts/{pageNo}",1))
+        mockMvc.perform(get("/contacts").param("pageNo","1"))
                 .andExpect(status().isOk())
                 .andDo(print())
-                .andExpect(jsonPath("$[0].Name").value("Nagyon Almos"));
+                .andExpect(jsonPath("$[0].name").value("Nagyon Almos"));
 
     }
     @Test
@@ -74,7 +75,7 @@ public class TestForPaging {
         Contact contact = new Contact(1L,"Nagyon","Almos","ha@hah.hu","1120120",company,"ha",Status.DELETED,d1,d2);
 
         contracts.add(contractMapper.toContactForListDto(contact));
-        MvcResult result = mockMvc.perform(get("/contacts/{pageNo}",1))
+        MvcResult result = mockMvc.perform(get("/contacts").param("pageNo","1"))
                 .andExpect(status().isOk())
                 .andReturn();
         String actualJson =result.getResponse().getContentAsString();
@@ -92,11 +93,15 @@ public class TestForPaging {
         for(long l=0;l<10;l++) {
             contact = new Contact(l, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
             contracts.add(contractMapper.toContactForListDto(contact));
+            contactService.save(contractMapper.toContactDto(contact));
         }
             contact = new Contact(11L, "Focis", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
-            contracts.add(contractMapper.toContactForListDto(contact));
-            contact = new Contact(12L, "Focis", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
+
+        contactService.save(contractMapper.toContactDto(contact));
         contracts.add(contractMapper.toContactForListDto(contact));
+            contact = new Contact(12L, "Focis", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
+        contactService.save(contractMapper.toContactDto(contact));
+            contracts.add(contractMapper.toContactForListDto(contact));
         Mockito.when(contactService.findTenForUser(2)).thenReturn(contracts);
         mockMvc.perform(get("/contacts/{pageNo}",2))
                 .andExpect(status().isOk())

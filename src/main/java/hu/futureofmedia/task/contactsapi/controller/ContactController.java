@@ -42,14 +42,11 @@ public class ContactController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public String createContractor(@Valid @RequestBody ContactDTO contactDTO, BindingResult result, Model m){
+    public Long createContractor(@Valid @RequestBody ContactDTO contactDTO, BindingResult result, Model m){
         if(result.hasErrors()) {
-            return result.getFieldErrors().toString();
+            return null;
         }
-        m.addAttribute("message", "Successfully saved phone: "
-                + contactDTO.toString());
-        contactService.save(contactDTO);
-        return "phoneHome";
+        return contactService.save(contactDTO);
     }
 
     @PutMapping("{id}")
