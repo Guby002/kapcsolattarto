@@ -16,12 +16,11 @@ import java.util.List;
 public interface ContactMapper {
     ContactDTO toContactDto(Contact contact);
     Contact toContact (ContactDTO contactDTO);
-    List<ContactForListDTO> toContactForListListDto(List<Contact> all);
     ContactForListDTO toContactForListDto (Contact contact);
     Contact updateContactFromContactDTO (ContactDTO contactDTO);
     @AfterMapping
     default void afterToContactForListDto(Contact contact, @MappingTarget final ContactForListDTO contactForListDTO){
-        contactForListDTO.setName(contact.getFirstName()+contact.getSecondName());
+        contactForListDTO.setName(contact.getFirstName()+" "+contact.getSecondName());
         contactForListDTO.setCompanyName(contact.getCompany().getName());
     }
 

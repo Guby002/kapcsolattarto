@@ -8,14 +8,9 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface ContactService {
-
-
     void delete(Long id);
     List<ContactForListDTO> findTenForUser(int pageNo);
     ContactDTO findById(Long id) throws RecordNotFoundException;
-
-    void save(ContactDTO contactDTO);
-
-
+    Long save(ContactDTO contactDTO);
     Long update(Long id, ContactDTO contactDTO);
 }

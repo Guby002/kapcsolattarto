@@ -5,6 +5,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import hu.futureofmedia.task.contactsapi.entities.Company;
+import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.validator.ContactNumberConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,6 +21,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class ContactDTO {
     //validáció ide kell!
+    private Long id;
     @NotBlank(message = "validation.required.first-name")
     private String firstName;
     @NotBlank(message = "validation.required.second-name")
@@ -30,6 +32,7 @@ public class ContactDTO {
     private String phoneNumber;
     private Company company;
     private String comment;
+    private Status status;
     private ZonedDateTime createDate;
     private ZonedDateTime lastModify;
 }
