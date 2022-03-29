@@ -41,4 +41,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
        return handleExceptionInternal(
                ex, apiError, headers, apiError.getStatus(), request);
    }
+    @ExceptionHandler({ RecordNotFoundException.class })
+    protected ResponseEntity<Object> handleNotFound(
+            Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, "Contactor not found",
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
 }
