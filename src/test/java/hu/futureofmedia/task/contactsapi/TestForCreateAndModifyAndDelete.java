@@ -129,8 +129,79 @@ public class TestForCreateAndModifyAndDelete {
         ZonedDateTime d1 = now();
         Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
         contactService.save(contractMapper.toContactDto(contact));
-        mockMvc.perform(MockMvcRequestBuilders.delete("/contacts/{id}", 1)).andDo(print())
+        mockMvc.perform(MockMvcRequestBuilders.delete("/contacts").param("id", "2"))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
+    ///SHOUD throw exception
+    @Test
+    public void whenPostRequestToContactorsAndValidContactor_thenThrowException_CauseEmptyFirstName() throws Exception {
+        Company company = new Company(1L, "as");
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
+        ContactDTO contactDTO = new ContactDTO(1L,"", "Almos", "ha@hah.hu", "302055441", company, "ha",Status.ACTIVE,  d1, d2);
+        contactService.save(contactDTO);
+        String json = objectMapper.writeValueAsString(contactDTO);
+        MockHttpServletRequestBuilder builder =
 
+                post("/contacts")
+                        .contentType("application/json")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8");
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(jsonPath("$.errors").value("firstName: validation.required.first-name"));
+    }
+    @Test
+    public void whenPostRequestToContactorsAndValidContactor_thenThrowException_CauseEmptySecondName()throws Exception{
+        Company company = new Company(1L, "as");
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
+        ContactDTO contactDTO = new ContactDTO(1L,"JUHU", "", "ha@hah.hu", "302055441", company, "ha",Status.ACTIVE,  d1, d2);
+        contactService.save(contactDTO);
+        String json = objectMapper.writeValueAsString(contactDTO);
+        MockHttpServletRequestBuilder builder =
+                post("/contacts")
+                        .contentType("application/json")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8");
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(jsonPath("$.errors").value("secondName: validation.required.second-name"));
+    }
+    @Test
+    public void whenPostRequestToContactorsAndValidContactor_thenThrowException_CauseWringPhoneNumber() throws Exception {
+        Company company = new Company(1L, "as");
+        ObjectMapper objectMapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        ZonedDateTime d2 = now();
+        ZonedDateTime d1 = now();
+        ContactDTO contactDTO = new ContactDTO(1L,"aa", "Almos", "ha@hah.hu", "30205544", company, "ha",Status.ACTIVE,  d1, d2);
+        contactService.save(contactDTO);
+        String json = objectMapper.writeValueAsString(contactDTO);
+        MockHttpServletRequestBuilder builder =
+                post("/contacts")
+                        .contentType("application/json")
+                        .content(json)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8");
+        mockMvc.perform(builder)
+                .andDo(print())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andExpect(jsonPath("$.errors").value("phoneNumber: Invalid phone number"));
+    }
 }
