@@ -69,17 +69,4 @@ public class ContactMapperTest {
                 }
         );
     }
-  /* @Test
-    void phoneNumberValidationNotANumber() throws Exception {
-        ContactMapperImpl contractMapper = new ContactMapperImpl();
-        Company company = new Company(1L, "as");
-        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", true, d1, d2);
-        contactService.save(contractMapper.toContactDto(contact));
-
-    }
-    @Test
-    void phoneNumberValidation() throws Exception {
-        String phoneNumber = "302055441";
-        assertTrue(ContactNumberValidator.validatePhoneNumber( phoneNumber));
-    }*/
 }

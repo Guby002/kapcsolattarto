@@ -30,7 +30,6 @@ public class Contact{
     @Column(name = "second_name")
     private String secondName;
 
-    @Email
     @Column(name = "email")
     String email;
 

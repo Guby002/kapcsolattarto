@@ -17,12 +17,13 @@ public class ContactNumberValidator implements
     public boolean isValid(String contactField,
                            ConstraintValidatorContext cxt) {
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+        Phonenumber.PhoneNumber swissNumberProto = null;
         try {
-            Phonenumber.PhoneNumber swissNumberProto = phoneUtil.parse(contactField, "HU");
-            return (phoneUtil.isValidNumber(swissNumberProto)); // returns true
+            swissNumberProto = phoneUtil.parse(contactField, "HU");
         } catch (NumberParseException e) {
-            System.err.println("NumberParseException was thrown: " + e.toString());
-            return false;
+            e.printStackTrace();
         }
+        return (phoneUtil.isValidNumber(swissNumberProto)); // returns true
+
     }
-        }
+}

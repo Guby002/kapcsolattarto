@@ -27,37 +27,39 @@ public class ContactServiceImpl implements ContactService  {
 
     @Override
     public Long save(ContactDTO contactDTO){
-        Contact c = contactMapper.toContact(contactDTO);
-        c.setStatus(Status.ACTIVE);
-        return contactRepository.save(c).getId();
+        contactDTO.setStatus(Status.ACTIVE);
+        return contactRepository.save(contactMapper.toContact(contactDTO)).getId();
     }
 
     @Override
     @PreUpdate
     public Long update(Long id , ContactDTO contactDTO) {
         if(contactRepository.findById(id).isPresent()) {
-            Contact c = contactMapper.updateContactFromContactDTO(contactDTO);
-            contactRepository.save(c);
-            return id;
-        }
-        return null;
+                Contact contact = contactRepository.getById(id);
+                contactMapper.updateContactFromContactDTO(contactDTO,contact);
+                contactRepository.save(contact);
+                return id;
+            }
+            return null;
     }
 
     @Override
     public void delete(Long id) {
         if(contactRepository.findById(id).isPresent()){
-            Contact c = contactRepository.getById(id);
-            c.setStatus(Status.DELETED);
-            contactRepository.save(c);
+            Contact contact = contactRepository.getById(id);
+            contact.setStatus(Status.DELETED);
+            contactRepository.save(contact);
         }
     }
+
     @Override
     public List<ContactForListDTO> findTenForUser(int pageNo) {
         if(pageNo< 1 ) pageNo=1;
-        Pageable pageSortByName = PageRequest.of(pageNo-1 ,10,Sort.by("firstName").and(Sort.by("secondName")));
+        Pageable pageSortByName = PageRequest.of(pageNo-1 ,10,Sort.by("firstName"));
         List<Contact> listData = contactRepository.findAllByStatus(Status.ACTIVE,pageSortByName).toList();
         return listData.stream().map(contactMapper::toContactForListDto).collect(Collectors.toList());
     }
+
     @Override
     public ContactDTO findById (Long id) {
         Optional<ContactDTO> contactDTO = Optional.ofNullable(contactMapper.toContactDto(
