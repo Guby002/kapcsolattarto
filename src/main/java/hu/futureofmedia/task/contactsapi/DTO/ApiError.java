@@ -1,4 +1,4 @@
-package hu.futureofmedia.task.contactsapi.entities;
+package hu.futureofmedia.task.contactsapi.DTO;
 
 import lombok.*;
 import org.springframework.http.HttpStatus;

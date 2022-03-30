@@ -25,6 +25,7 @@ dependencies {
     implementation "org.mapstruct:mapstruct:1.4.2.Final", 'org.projectlombok:lombok:1.18.22'
     implementation 'com.github.ivanovvlad9626:TestRail-RestAssured:0.5'
     implementation 'org.microprofile-ext.restclient-ext:configurable-errorresponse-handler:1.0.0'
+    implementation 'junit:junit:4.13.2'
     annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final", 'org.projectlombok:lombok:1.18.22', "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'

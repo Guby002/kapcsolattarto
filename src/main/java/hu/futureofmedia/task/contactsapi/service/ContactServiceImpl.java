@@ -23,50 +23,48 @@ import java.util.stream.Collectors;
 public class ContactServiceImpl implements ContactService  {
     private final ContactMapper contactMapper;
     private final ContactRepository contactRepository;
-
+    private final CompanyService companyService;
 
     @Override
     public Long save(ContactDTO contactDTO){
         contactDTO.setStatus(Status.ACTIVE);
-        return contactRepository.save(contactMapper.toContact(contactDTO)).getId();
+        Contact contact = contactMapper.toContact(contactDTO);
+        contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
+        return contactRepository.save(contact).getId();
     }
 
     @Override
-    @PreUpdate
     public Long update(Long id , ContactDTO contactDTO) {
-        if(contactRepository.findById(id).isPresent()) {
-                Contact contact = contactRepository.getById(id);
-                contactMapper.updateContactFromContactDTO(contactDTO,contact);
-                contactRepository.save(contact);
-                return id;
-            }
-            return null;
+        Contact contact = findContact(id);
+        contactMapper.updateContactFromContactDTO(contactDTO,contact);
+        contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
+        contactRepository.save(contact);
+        return id;
     }
 
     @Override
     public void delete(Long id) {
-        if(contactRepository.findById(id).isPresent()){
-            Contact contact = contactRepository.getById(id);
-            contact.setStatus(Status.DELETED);
-            contactRepository.save(contact);
-        }
+        Contact contact = findContact(id);
+        contact.setStatus(Status.DELETED);
+        contactRepository.save(contact);
     }
 
     @Override
     public List<ContactForListDTO> findTenForUser(int pageNo) {
-        if(pageNo< 1 ) pageNo=1;
+        if( pageNo< 1 ) {
+            pageNo=1;
+        }
         Pageable pageSortByName = PageRequest.of(pageNo-1 ,10,Sort.by("firstName"));
-        List<Contact> listData = contactRepository.findAllByStatus(Status.ACTIVE,pageSortByName).toList();
+        Page<Contact> listData = contactRepository.findAllByStatus(Status.ACTIVE,pageSortByName);
         return listData.stream().map(contactMapper::toContactForListDto).collect(Collectors.toList());
     }
 
     @Override
     public ContactDTO findById (Long id) {
-        Optional<ContactDTO> contactDTO = Optional.ofNullable(contactMapper.toContactDto(
-                contactRepository.findById(id).orElseThrow(RecordNotFoundException::new)));
-        if (contactDTO.isPresent()) {
-            return contactDTO.get();
-        }
-        return null;
+        Contact contact = findContact(id);
+        return contactMapper.toContactDto(contact);
+    }
+    private Contact findContact (Long id){
+        return contactRepository.findById(id).orElseThrow(RecordNotFoundException::new);
     }
 }
