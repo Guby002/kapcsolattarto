@@ -21,6 +21,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
     implementation 'io.openliberty.features:com.ibm.websphere.appserver.jaxrsDefaultExceptionMapper-1.0:22.0.0.3'
     implementation "org.mapstruct:mapstruct:1.4.2.Final", 'org.projectlombok:lombok:1.18.22'
     implementation 'com.github.ivanovvlad9626:TestRail-RestAssured:0.5'
