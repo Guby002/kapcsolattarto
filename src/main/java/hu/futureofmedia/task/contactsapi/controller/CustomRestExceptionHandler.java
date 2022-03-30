@@ -33,12 +33,14 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
        ApiError apiError =
                new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+       logger.error("Fault in validation");
        return handleExceptionInternal(
                ex, apiError, headers, apiError.getStatus(), request);
    }
     @ExceptionHandler({ RecordNotFoundException.class })
     protected ResponseEntity<Object> handleNotFound(
             Exception ex, WebRequest request) {
+        logger.error("Can't found the record");
         return handleExceptionInternal(ex, "Not found",
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

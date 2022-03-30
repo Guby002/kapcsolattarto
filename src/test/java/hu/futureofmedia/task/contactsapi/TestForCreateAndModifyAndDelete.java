@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -34,6 +33,7 @@ import static java.time.ZonedDateTime.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.testng.AssertJUnit.assertEquals;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -79,7 +79,7 @@ public class TestForCreateAndModifyAndDelete {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(jsonPath("$").value(1));
-
+assertEquals(contactService.findById(1L).getFirstName(),"Lali");
     }//asserequals with strings objecmapper.readvalue
 
     @Test
@@ -100,7 +100,7 @@ public class TestForCreateAndModifyAndDelete {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(jsonPath("$").value(1));
-    //    assertEquals("hadsadsh,",s);
+        assertEquals(contactService.findById(1L).getFirstName(),"Nagyon");
     }
 
     @Test
@@ -108,18 +108,18 @@ public class TestForCreateAndModifyAndDelete {
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
                 .build();
-      contactService.save(createForTest());
-        MvcResult result =  mockMvc.perform(get("/contacts/1")
-                .contentType("application/json")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .characterEncoding("utf-8"))
+        contactService.save(createForTest());
+        MvcResult result = mockMvc.perform(get("/contacts/1")
+                        .contentType("application/json")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .characterEncoding("utf-8"))
                 .andDo(print())
                 .andExpect(jsonPath("$.firstName").value("Nagyon"))
                 .andExpect(status().isOk())
                 .andReturn();
         String contentAsString = result.getResponse().getContentAsString();
-    }///assert equal
+    }
 
 
     @Test
