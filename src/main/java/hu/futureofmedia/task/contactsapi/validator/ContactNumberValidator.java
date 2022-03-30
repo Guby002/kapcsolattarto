@@ -24,6 +24,5 @@ public class ContactNumberValidator implements
             e.printStackTrace();
         }
         return (phoneUtil.isValidNumber(swissNumberProto)); // returns true
-
     }
 }

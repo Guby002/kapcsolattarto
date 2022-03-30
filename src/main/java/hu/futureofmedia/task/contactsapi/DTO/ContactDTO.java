@@ -5,13 +5,17 @@ import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.validator.ContactNumberConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ContactDTO {
     private Long id;
     @NotBlank(message = "validation.required.first-name")
@@ -23,7 +27,9 @@ public class ContactDTO {
     private String email;
     @ContactNumberConstraint
     private String phoneNumber;
-    private Company company;
+    @NotNull(message = "validation.required.company")
+    @Valid
+    private CompanyDTO companyDTO;
     private String comment;
     private Status status;
     private ZonedDateTime createDate;

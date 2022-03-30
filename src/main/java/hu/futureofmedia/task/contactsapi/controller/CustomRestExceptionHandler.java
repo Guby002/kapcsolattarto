@@ -1,27 +1,22 @@
 package hu.futureofmedia.task.contactsapi.controller;
-import hu.futureofmedia.task.contactsapi.entities.ApiError;
+import hu.futureofmedia.task.contactsapi.DTO.ApiError;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
-import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.ConstraintViolationException;
 import java.util.*;
 
 @ControllerAdvice
 public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
+
    @Override
    protected ResponseEntity<Object> handleMethodArgumentNotValid(
            MethodArgumentNotValidException ex,
@@ -41,4 +36,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
        return handleExceptionInternal(
                ex, apiError, headers, apiError.getStatus(), request);
    }
+    @ExceptionHandler({ RecordNotFoundException.class })
+    protected ResponseEntity<Object> handleNotFound(
+            Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, "Not found",
+                new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+    }
+
 }
