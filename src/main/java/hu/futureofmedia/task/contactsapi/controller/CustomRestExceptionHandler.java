@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLException;
 import java.util.*;
 
 @ControllerAdvice
@@ -37,7 +38,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
        return handleExceptionInternal(
                ex, apiError, headers, apiError.getStatus(), request);
    }
-    @ExceptionHandler({ RecordNotFoundException.class })
+    @ExceptionHandler({ RecordNotFoundException.class, SQLException.class})
     protected ResponseEntity<Object> handleNotFound(
             Exception ex, WebRequest request) {
         logger.error("Can't found the record");
