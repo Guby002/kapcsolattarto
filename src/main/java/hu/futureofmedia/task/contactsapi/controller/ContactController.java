@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
@@ -39,7 +40,7 @@ public class ContactController {
     }
 
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    public void delete(@PathVariable Long id) throws SQLException {
         logger.info("single Contact DeleteMapping");
         contactService.delete(id);
     }
@@ -52,7 +53,7 @@ public class ContactController {
     }
 
     @PutMapping("{id}")
-    public Long updateContactor(@PathVariable ("id") Long id,@Valid @RequestBody ContactDTO contactDTO) {
+    public Long updateContactor(@PathVariable ("id") Long id,@Valid @RequestBody ContactDTO contactDTO) throws SQLException {
         logger.info("single Contact PutMapping");
         return contactService.update(id,contactDTO);
     }

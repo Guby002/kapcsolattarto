@@ -13,7 +13,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,27 +31,33 @@ public class ContactServiceImpl implements ContactService  {
     private final CompanyService companyService;
 
     Logger logger = LoggerFactory.getLogger(ContactController.class);
+
     @Override
+    @Transactional(readOnly = false)
     public Long save(ContactDTO contactDTO){
         contactDTO.setStatus(Status.ACTIVE);
         Contact contact = contactMapper.toContact(contactDTO);
         contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
-        logger.debug("New contactor saved");
+        logger.debug("New contactor saved ,contact:{}" ,contact);
         return contactRepository.save(contact).getId();
     }
 
+
+
     @Override
-    public Long update(Long id , ContactDTO contactDTO) {
+    @Transactional
+    public Long update(Long id , ContactDTO contactDTO){
         Contact contact = findContact(id);
         contactMapper.updateContactFromContactDTO(contactDTO,contact);
         contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
         contactRepository.save(contact);
-        logger.debug("Contactor updated");
+        logger.debug("contactDTO: {},contact: {}",contactDTO,contact);
         return id;
     }
 
     @Override
-    public void delete(Long id) {
+    @Transactional
+    public void delete(Long id){
         Contact contact = findContact(id);
         contact.setStatus(Status.DELETED);
         contactRepository.save(contact);
@@ -55,6 +65,7 @@ public class ContactServiceImpl implements ContactService  {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ContactForListDTO> findTenForUser(int pageNo) {
         if( pageNo< 1 ) {
             pageNo=1;
@@ -66,11 +77,13 @@ public class ContactServiceImpl implements ContactService  {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ContactDTO findById (Long id) {
         Contact contact = findContact(id);
         logger.debug("Find contact by Id");
         return contactMapper.toContactDto(contact);
     }
+
     private Contact findContact (Long id){
         logger.debug("Search for one contact by Id");
         return contactRepository.findById(id).orElseThrow(RecordNotFoundException::new);

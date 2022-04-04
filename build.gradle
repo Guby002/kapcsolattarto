@@ -27,10 +27,12 @@ dependencies {
     implementation 'com.github.ivanovvlad9626:TestRail-RestAssured:0.5'
     implementation 'org.microprofile-ext.restclient-ext:configurable-errorresponse-handler:1.0.0'
     implementation 'junit:junit:4.13.2'
+    implementation 'org.springframework.boot:spring-boot-starter-security:2.6.5'
     annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final", 'org.projectlombok:lombok:1.18.22', "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
     testImplementation group: 'uk.co.jemos.podam', name: 'podam', version: '7.2.8.RELEASE'
 }
 

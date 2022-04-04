@@ -1,22 +1,15 @@
 package hu.futureofmedia.task.contactsapi.entities;
 
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
-import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Setter
 @Getter
 @Builder
+@ToString
 @Entity
 @Table(name="contact")
 public class Contact{
@@ -56,7 +49,6 @@ public class Contact{
     protected void setNewLastModifiedDate() {
         this.lastModify=ZonedDateTime.now();
     }
-
     @PrePersist
     protected void  setCreateDateTime(){
         this.createDate=ZonedDateTime.now();
