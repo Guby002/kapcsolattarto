@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.3'
+    id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 
@@ -14,6 +14,12 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.2'
+    implementation 'org.springframework.security.oauth:spring-security-oauth2:2.5.1.RELEASE'
+    implementation 'com.nimbusds:nimbus-jose-jwt:9.21'
+    implementation 'org.springframework.security:spring-security-oauth2-resource-server:5.6.2'
+    implementation 'org.springframework.security:spring-security-jwt'
+    implementation group: 'com.auth0', name: 'auth0', version: '1.13.1'
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.12.45'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
@@ -28,8 +34,11 @@ dependencies {
     implementation 'org.microprofile-ext.restclient-ext:configurable-errorresponse-handler:1.0.0'
     implementation 'junit:junit:4.13.2'
     implementation 'org.springframework.boot:spring-boot-starter-security:2.6.5'
+    implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.6.3'
+    implementation 'com.guizmaii:scala-nimbus-jose-jwt_2.13:1.0.2'
+    implementation 'javax.servlet:javax.servlet-api:4.0.1'
+    implementation 'org.apache.maven:maven-plugin-api:3.8.4'
     annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final", 'org.projectlombok:lombok:1.18.22', "org.projectlombok:lombok-mapstruct-binding:0.2.0"
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.junit.vintage:junit-vintage-engine:5.8.2'
