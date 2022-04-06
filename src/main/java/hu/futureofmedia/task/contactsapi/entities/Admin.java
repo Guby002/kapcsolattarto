@@ -26,9 +26,6 @@ public class Admin {
     private String email;
     @Column(name = "role")
     private Role role;
-
-
-
     @PrePersist
     protected void  setCreateDateTime(){
         this.createDate=ZonedDateTime.now();

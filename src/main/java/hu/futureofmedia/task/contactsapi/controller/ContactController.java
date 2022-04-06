@@ -4,9 +4,8 @@ package hu.futureofmedia.task.contactsapi.controller;
 import groovy.util.logging.Log4j2;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
-
-import hu.futureofmedia.task.contactsapi.service.ContactService;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
+import hu.futureofmedia.task.contactsapi.service.ContactService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,9 +16,10 @@ import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.List;
 
+
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/contacts")
+@RequestMapping("api/contact")
 @Log4j2
 public class ContactController {
 
@@ -29,7 +29,7 @@ public class ContactController {
 
     @GetMapping()
     public List<ContactForListDTO> findTenForUser(@RequestParam("pageNo") int pageNo){
-        logger.info("10 Contact/page GetMapping");
+        logger.info("10 Contact/page GetMapping ");
         return contactService.findTenForUser(pageNo);
     }
 

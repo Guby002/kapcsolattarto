@@ -18,6 +18,9 @@ public class AdminDTO {
         private Long id;
         @Column(name = "created_date", nullable = false)
         private ZonedDateTime createDate;
+        private String firstName;
+        @NotBlank(message = "validation.required.second-name")
+        private String secondName;
         @NotBlank(message = "validation.required.user-name")
         private String userName;
         @NotBlank(message = "validation.required.password")
