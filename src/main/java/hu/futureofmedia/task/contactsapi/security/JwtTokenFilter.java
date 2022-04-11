@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi.security;
 
-
 import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,17 +15,19 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.apache.logging.log4j.util.Strings.isEmpty;
 
-@Component
+
 @AllArgsConstructor
+@Component
 public class JwtTokenFilter extends OncePerRequestFilter {
 
     private final JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepository;
+
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -49,7 +50,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         // Get user identity and set it on the spring security context
         UserDetails userDetails = userRepository
-            .findByUserName(jwtTokenUtil.getUserNameFromJwtToken(token))
+            .findByUsername(jwtTokenUtil.getUserNameFromJwtToken(token))
             .orElse(null);
 
         UsernamePasswordAuthenticationToken
@@ -66,23 +67,5 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         chain.doFilter(request, response);
     }
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request)
-            throws ServletException {
-        String url = request.getRequestURL().toString();
-        return isResourceUrl(url);
-    }
 
-    private boolean isResourceUrl(String url) {
-        boolean isResourceUrl = false;
-        List<String> resourceRequests = Arrays.asList(
-                "/css/", "/js/", "/scss/", "/fonts/", "/emails/",
-                ".css", ".js", ".scss", ".eot", ".svg", ".ttf", ".woff", ".otf", ".ico", ".png");
-        for (String resourceRequest : resourceRequests) {
-            if (url.contains(resourceRequest)) {
-                isResourceUrl = true;
-            }
-        }
-        return isResourceUrl;
-    }
 }
