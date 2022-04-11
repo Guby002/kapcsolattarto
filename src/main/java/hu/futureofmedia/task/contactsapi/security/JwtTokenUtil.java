@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.time.ZonedDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,12 +28,14 @@ public class JwtTokenUtil {
 		Map<String, Object> claims = new HashMap<>();
 		return doGenerateToken(claims, userDetails.getUsername());
 	}
-	private String doGenerateToken(Map<String, Object> claims, String subject) {
-		final ZonedDateTime createdDate = ZonedDateTime.now();
-		logger.info("doGenerateToken " + createdDate);
+	private String doGenerateToken(Map<String, Object> claims, String userName) {
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + 1000);
+		logger.info("doGenerateToken " + expiryDate);
 		return Jwts.builder()
-				.setClaims(claims)
-				.setSubject(subject)
+				.setSubject(userName)
+				.setIssuedAt(new Date())
+				.setExpiration(expiryDate)
 				.signWith(SignatureAlgorithm.RS256, rsaPrivateKey)
 				.compact();
 	}
@@ -64,4 +67,5 @@ public class JwtTokenUtil {
 		 return claims.getSubject();
 		
 	}
+
 }
