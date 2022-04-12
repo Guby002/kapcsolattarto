@@ -1,22 +1,16 @@
 package hu.futureofmedia.task.contactsapi.security;
 
 import hu.futureofmedia.task.contactsapi.service.UserDetailsImpl;
-import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
-import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 public class JwtTokenUtil {

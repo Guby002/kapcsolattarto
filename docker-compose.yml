@@ -9,8 +9,8 @@ services:
       POSTGRES_PASSWORD: contactsapi
       POSTGRES_DB: contactsapi
     volumes:
-      - ./data.sql:/docker-entrypoint-initdb.d/data.sql
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - /data.sql /docker-entrypoint-initdb.d/data.sql
+      - /schema.sql /docker-entrypoint-initdb.d/schema.sql
   mailhog:
     image: mailhog/mailhog
     ports:

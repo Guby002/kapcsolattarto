@@ -36,6 +36,7 @@ public class Contact{
     @Column
     private String comment;
 
+    @Column(name="stat")
     @Enumerated(EnumType.STRING)
     private Status status;
 

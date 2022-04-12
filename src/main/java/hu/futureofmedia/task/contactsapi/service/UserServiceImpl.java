@@ -42,9 +42,6 @@ public class UserServiceImpl implements UserService{
     private final Encoder encoder;
     private final UserMapper userMapper;
 
-
-
-
     @Transactional
     public ResponseEntity<?> login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -62,6 +59,7 @@ public class UserServiceImpl implements UserService{
                 userDetails.getEmail(),
                 roles));
     }
+
     @Transactional
     public ResponseEntity<?> registration(UserDTO userDTO) {
         if (userRepository.existsByUsername(userDTO.getUsername())) {
@@ -80,30 +78,29 @@ public class UserServiceImpl implements UserService{
                 userDTO.getEmail());
         logger.info("Password: {}", registrateUserDTO.getPassword());
         Set<String> strRoles = (userDTO.getRole().stream()
-                .map(s -> s.toString())
+                .map(s -> s.getName().toString())
                 .collect(Collectors.toSet()));
+        logger.info("ROLES {}", strRoles);
         Set<Role> roles = new HashSet<>();
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        if (strRoles.isEmpty()) {
+            Role userRole = roleRepository.findRoledByName(RoleName.USER);
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
                 switch (role) {
                     case "admin":
-                        Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        Role adminRole = roleRepository.findRoledByName(RoleName.ADMIN);
                         roles.add(adminRole);
                         break;
                     default:
-                        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        Role userRole = roleRepository.findRoledByName(RoleName.USER);
                         roles.add(userRole);
                 }
             });
         }
-        User user=userMapper.registrateUserDTOToUser(registrateUserDTO,roles);
+        User user = userMapper.registrateUserDTOToUser(registrateUserDTO, roles);
         userRepository.save(user);
+        logger.info("ROLES {}", user.getRoles().size());
         return ResponseEntity.ok("User registered successfully!");
     }
 }

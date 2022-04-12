@@ -38,8 +38,10 @@ public class ContactServiceImpl implements ContactService  {
         contactDTO.setStatus(Status.ACTIVE);
         Contact contact = contactMapper.toContact(contactDTO);
         contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
+
+        var id = contactRepository.save(contact).getId();
         logger.debug("New contactor saved ,contact:{}" ,contact);
-        return contactRepository.save(contact).getId();
+        return id;
     }
 
 

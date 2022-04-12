@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +20,6 @@ import javax.validation.Valid;
 public class AuthApi {
 
     protected final Log logger = LogFactory.getLog(getClass());
-
-
     public final UserService userService;
 
     @PostMapping("/login")

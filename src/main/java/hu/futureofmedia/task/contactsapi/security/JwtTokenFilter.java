@@ -1,10 +1,12 @@
 package hu.futureofmedia.task.contactsapi.security;
 
+import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
 import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,39 +20,57 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-@Component
+import java.util.List;
 
+import static org.aspectj.util.LangUtil.isEmpty;
+
+@Component
 public class JwtTokenFilter extends OncePerRequestFilter {
-    @Autowired
+
     private JwtTokenUtil jwtTokenUtil;
-    @Autowired
-    private  UserDetailsServiceImpl userDetailsService;
+
+    private UserDetailsServiceImpl userDetailsService;
+
+    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil, UserDetailsServiceImpl userDetailsService) {
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.userDetailsService = userDetailsService;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        try {
-            String jwt = parseJwt(request);
-            if (jwt != null && jwtTokenUtil.validateJwtToken(jwt)) {
-                String username = jwtTokenUtil.getUserNameFromJwtToken(jwt);
-                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
-        } catch (Exception e) {
-            logger.error("Cannot set user authentication: {}", e);
+        final String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+//        if (isEmpty(header) || !header.startsWith("Bearer ")) {
+        if (isEmpty(header) || !header.startsWith("Basic ")) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        // Get jwt token and validate
+        final String token = header.split(" ")[1].trim();
+        if (!jwtTokenUtil.validateJwtToken(token)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // Get user identity and set it on the spring security context
+        UserDetails userDetails = userDetailsService
+                .loadUserByUsername(jwtTokenUtil.getUserNameFromJwtToken(token));
+
+        UsernamePasswordAuthenticationToken
+                authentication = new UsernamePasswordAuthenticationToken(
+                userDetails, null,
+                userDetails == null ?
+                        List.of() : userDetails.getAuthorities()
+        );
+
+        authentication.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
         filterChain.doFilter(request, response);
-    }
-    private String parseJwt(HttpServletRequest request) {
-        String headerAuth = request.getHeader("Authorization");
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
-            return headerAuth.substring(7, headerAuth.length());
-        }
-        return null;
     }
 
 }

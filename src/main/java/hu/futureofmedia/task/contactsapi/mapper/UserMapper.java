@@ -6,6 +6,7 @@ import hu.futureofmedia.task.contactsapi.entities.Role;
 import hu.futureofmedia.task.contactsapi.entities.User;
 import org.mapstruct.BeforeMapping;
 import org.mapstruct.Mapper;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Set;
 
@@ -14,4 +15,5 @@ public interface UserMapper{
     User userDTOToUser(UserDTO userDTO);
     UserDTO userToUserDTO(User user);
     User registrateUserDTOToUser (RegistrateUserDTO registrateUserDTO, Set<Role> roles);
+    UserDTO userDetailsToUserDTO(UserDetails userDetails);
 }
