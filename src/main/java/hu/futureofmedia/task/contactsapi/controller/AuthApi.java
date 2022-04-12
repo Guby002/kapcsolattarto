@@ -29,7 +29,7 @@ public class AuthApi {
         return userService.login(loginDTO);
     }
     @PostMapping("/register")
-    public Long register(@Valid @RequestBody UserDTO request) {
+    public ResponseEntity<?> register(@Valid @RequestBody UserDTO request) {
         logger.info("User registration");
         return userService.registration(request);
     }

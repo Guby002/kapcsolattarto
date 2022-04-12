@@ -1,10 +1,14 @@
 package hu.futureofmedia.task.contactsapi.security;
 
+import hu.futureofmedia.task.contactsapi.service.UserDetailsImpl;
+import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import java.security.interfaces.RSAPrivateKey;
@@ -24,48 +28,34 @@ public class JwtTokenUtil {
 
 	Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
 
-	public String generateToken(UserDetails userDetails) {
-		Map<String, Object> claims = new HashMap<>();
-		return doGenerateToken(claims, userDetails.getUsername());
-	}
-	private String doGenerateToken(Map<String, Object> claims, String userName) {
-		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + 1000);
-		logger.info("doGenerateToken " + expiryDate);
+	public String generateJwtToken(Authentication authentication) {
+		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 		return Jwts.builder()
-				.setSubject(userName)
+				.setSubject((userPrincipal.getUsername()))
 				.setIssuedAt(new Date())
-				.setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.RS256, rsaPrivateKey)
+				.setExpiration(new Date((new Date()).getTime() +1000))
+				.signWith(SignatureAlgorithm.RS512, rsaPrivateKey)
 				.compact();
 	}
-	public boolean validateJwtToken(String token) {
+	public String getUserNameFromJwtToken(String token) {
+		return Jwts.parser().setSigningKey(rsaPrivateKey).parseClaimsJws(token).getBody().getSubject();
+	}
+	public boolean validateJwtToken(String authToken) {
 		try {
-			Jwts.parser()
-				.setSigningKey(rsaPrivateKey)
-				.parseClaimsJws(token);
+			Jwts.parser().setSigningKey(rsaPrivateKey).parseClaimsJws(authToken);
 			return true;
-		}catch(UnsupportedJwtException exp) {
-			System.out.println("claimsJws argument does not represent Claims JWS" + exp.getMessage());
-		}catch(MalformedJwtException exp) {
-			System.out.println("claimsJws string is not a valid JWS" + exp.getMessage());
-		}catch(SignatureException exp) {
-			System.out.println("claimsJws JWS signature validation failed" + exp.getMessage());
-		}catch(ExpiredJwtException exp) {
-			System.out.println("Claims has an expiration time before the method is invoked" + exp.getMessage());
-		}catch(IllegalArgumentException exp) {
-			System.out.println("claimsJws string is null or empty or only whitespace" + exp.getMessage());
+		} catch (SignatureException e) {
+			logger.error("Invalid JWT signature: {}", e.getMessage());
+		} catch (MalformedJwtException e) {
+			logger.error("Invalid JWT token: {}", e.getMessage());
+		} catch (ExpiredJwtException e) {
+			logger.error("JWT token is expired: {}", e.getMessage());
+		} catch (UnsupportedJwtException e) {
+			logger.error("JWT token is unsupported: {}", e.getMessage());
+		} catch (IllegalArgumentException e) {
+			logger.error("JWT claims string is empty: {}", e.getMessage());
 		}
 		return false;
-	}
-	
-	public String getUserNameFromJwtToken(String token) {
-		 Claims claims =Jwts.parser()
-				   .setSigningKey(rsaPrivateKey)
-				   .parseClaimsJws(token)
-				   .getBody();
-		 return claims.getSubject();
-		
 	}
 
 }

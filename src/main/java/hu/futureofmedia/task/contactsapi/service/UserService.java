@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import javax.validation.Valid;
 
 public interface UserService {
-    Long registration(UserDTO userDTO);
+    ResponseEntity<?> registration(UserDTO userDTO);
     ResponseEntity<?> login( LoginDTO loginDTO);
 }

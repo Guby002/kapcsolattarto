@@ -1,78 +1,109 @@
 package hu.futureofmedia.task.contactsapi.service;
 
 import hu.futureofmedia.task.contactsapi.DTO.LoginDTO;
+import hu.futureofmedia.task.contactsapi.DTO.RegistrateUserDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
+import hu.futureofmedia.task.contactsapi.entities.JwtResponse;
 import hu.futureofmedia.task.contactsapi.entities.Role;
+import hu.futureofmedia.task.contactsapi.entities.RoleName;
 import hu.futureofmedia.task.contactsapi.entities.User;
 import hu.futureofmedia.task.contactsapi.mapper.UserMapper;
+import hu.futureofmedia.task.contactsapi.repositories.RoleRepository;
 import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
-import hu.futureofmedia.task.contactsapi.security.SecurityConfig;
+import hu.futureofmedia.task.contactsapi.security.AuthEntryPointJwt;
+import hu.futureofmedia.task.contactsapi.security.Encoder;
+import hu.futureofmedia.task.contactsapi.security.JwtTokenUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import javax.transaction.Transactional;
 
-import static java.lang.String.format;
-import static java.util.stream.Collectors.joining;
 
 @Service
 @AllArgsConstructor
 public class UserServiceImpl implements UserService{
-
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     private final AuthenticationManager authenticationManager;
-    private final JwtEncoder jwtEncoder;
+    private final JwtTokenUtil jwtTokenUtil;
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final Encoder encoder;
     private final UserMapper userMapper;
-    private final SecurityConfig securityConfig;
 
-    @Override
-    public Long registration(UserDTO userDTO) {
-        User user = userMapper.userDTOToUser(userDTO);
-        user.setEnabled(Boolean.TRUE);
-        user.setRole(Role.ADMIN);
-        user.setLocked(Boolean.FALSE);
-        user.setPassword(securityConfig.passwordEncoder().encode(userDTO.getPassword()));
-        return userRepository.save(user).getId();
+
+
+
+    @Transactional
+    public ResponseEntity<?> login(LoginDTO loginDTO) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtTokenUtil.generateJwtToken(authentication);
+
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(new JwtResponse(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles));
     }
-    public ResponseEntity<?> login( LoginDTO loginDTO) {
-        try {
-            Authentication authentication = authenticationManager
-                    .authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getUsername(),loginDTO.getPassword()));
-            UserDTO userDTO = userMapper.userToUserDTO((User) authentication.getPrincipal());
-
-            Instant now = Instant.now();
-            long expiry = 36000L;
-
-            String scope = authentication.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(joining(" "));
-
-            JwtClaimsSet claims = JwtClaimsSet.builder()
-                    .issuer(userDTO.getFirstName())
-                    .issuedAt(now)
-                    .expiresAt(now.plusSeconds(expiry))
-                    .subject(format("%s,%s", userDTO.getId(), userDTO.getUsername()))
-                    .claim("roles", scope)
-                    .build();
-
-            String token = this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.AUTHORIZATION, token)
-                    .body(userDTO);
-        } catch (BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    @Transactional
+    public ResponseEntity<?> registration(UserDTO userDTO) {
+        if (userRepository.existsByUsername(userDTO.getUsername())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Error: Username is already taken!");
         }
+        if (userRepository.existsByEmail(userDTO.getEmail())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Error: Email is already in use!");
+        }
+        // Create new user's account
+        RegistrateUserDTO  registrateUserDTO = new RegistrateUserDTO(userDTO.getUsername(),
+                encoder.passwordEncoder().encode(userDTO.getPassword()),
+                userDTO.getEmail());
+        logger.info("Password: {}", registrateUserDTO.getPassword());
+        Set<String> strRoles = (userDTO.getRole().stream()
+                .map(s -> s.toString())
+                .collect(Collectors.toSet()));
+        Set<Role> roles = new HashSet<>();
+        if (strRoles == null) {
+            Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(RoleName.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(adminRole);
+                        break;
+                    default:
+                        Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(userRole);
+                }
+            });
+        }
+        User user=userMapper.registrateUserDTOToUser(registrateUserDTO,roles);
+        userRepository.save(user);
+        return ResponseEntity.ok("User registered successfully!");
     }
 }
