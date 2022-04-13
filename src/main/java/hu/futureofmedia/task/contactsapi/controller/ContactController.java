@@ -10,6 +10,7 @@ import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import hu.futureofmedia.task.contactsapi.mapper.UserMapper;
 import hu.futureofmedia.task.contactsapi.service.ContactService;
 import hu.futureofmedia.task.contactsapi.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +27,7 @@ import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.List;
 
-
+@Tag(name = "ContactController")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path="api/contact")
@@ -37,12 +38,12 @@ public class ContactController {
     private final UserMapper userMapper;
     private final UserDetailsService userDetailsService;
     Logger logger = LoggerFactory.getLogger(ContactController.class);
-    @GetMapping()
+    @GetMapping("/foruser")
     public List<ContactForListDTO> findTenForUser(@RequestParam("pageNo") int pageNo){
-        logger.info("10 Contact/page GetMapping ");
+        logger.info("10 Contact/page GetMapping");
         return contactService.findTenForUser(pageNo);
     }
-    @GetMapping("/{id}")
+    @GetMapping("/foruser/{id}")
     public ContactDTO findContactById(@PathVariable("id") Long id) throws RecordNotFoundException {
         logger.info("single Contact GetMapping");
         return contactService.findById(id);

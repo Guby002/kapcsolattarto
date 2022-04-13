@@ -81,7 +81,7 @@ public class UserServiceImpl implements UserService{
         logger.info("ROLES {}", strRoles);
         Set<Role> roles = new HashSet<>();
         if (strRoles.isEmpty()) {
-            Role userRole = roleRepository.findRoledByName(RoleName.ADMIN);
+            Role userRole = roleRepository.findRoledByName(RoleName.USER);
             roles.add(userRole);
         }
         User user = userMapper.registrateUserDTOToUser(registrateUserDTO, roles);

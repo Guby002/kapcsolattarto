@@ -38,7 +38,6 @@ public class ContactServiceImpl implements ContactService  {
         contactDTO.setStatus(Status.ACTIVE);
         Contact contact = contactMapper.toContact(contactDTO);
         contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
-
         var id = contactRepository.save(contact).getId();
         logger.debug("New contactor saved ,contact:{}" ,contact);
         return id;
@@ -86,6 +85,7 @@ public class ContactServiceImpl implements ContactService  {
         return contactMapper.toContactDto(contact);
     }
 
+    @Transactional(readOnly = true)
     private Contact findContact (Long id){
         logger.debug("Search for one contact by Id");
         return contactRepository.findById(id).orElseThrow(RecordNotFoundException::new);

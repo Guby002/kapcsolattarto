@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi.entities;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
@@ -8,7 +7,7 @@ import java.util.List;
 public class JwtResponse {
     private Long id;
     private String token;
-    private String type = "Basic";
+    private String type = "Bearer";
     private String username;
     private String password;
     private List roles;
