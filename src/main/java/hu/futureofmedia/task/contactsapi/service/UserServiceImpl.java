@@ -10,7 +10,6 @@ import hu.futureofmedia.task.contactsapi.entities.User;
 import hu.futureofmedia.task.contactsapi.mapper.UserMapper;
 import hu.futureofmedia.task.contactsapi.repositories.RoleRepository;
 import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
-import hu.futureofmedia.task.contactsapi.security.AuthEntryPointJwt;
 import hu.futureofmedia.task.contactsapi.security.Encoder;
 import hu.futureofmedia.task.contactsapi.security.JwtTokenUtil;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -43,7 +41,7 @@ public class UserServiceImpl implements UserService{
     private final UserMapper userMapper;
 
     @Transactional
-    public ResponseEntity<?> login(LoginDTO loginDTO) {
+    public ResponseEntity<JwtResponse> login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -83,20 +81,8 @@ public class UserServiceImpl implements UserService{
         logger.info("ROLES {}", strRoles);
         Set<Role> roles = new HashSet<>();
         if (strRoles.isEmpty()) {
-            Role userRole = roleRepository.findRoledByName(RoleName.USER);
+            Role userRole = roleRepository.findRoledByName(RoleName.ADMIN);
             roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findRoledByName(RoleName.ADMIN);
-                        roles.add(adminRole);
-                        break;
-                    default:
-                        Role userRole = roleRepository.findRoledByName(RoleName.USER);
-                        roles.add(userRole);
-                }
-            });
         }
         User user = userMapper.registrateUserDTOToUser(registrateUserDTO, roles);
         userRepository.save(user);

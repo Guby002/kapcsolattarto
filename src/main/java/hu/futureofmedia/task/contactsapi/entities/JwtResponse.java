@@ -1,7 +1,10 @@
 package hu.futureofmedia.task.contactsapi.entities;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
+import java.util.List;
+@Data
 public class JwtResponse {
     private Long id;
     private String token;

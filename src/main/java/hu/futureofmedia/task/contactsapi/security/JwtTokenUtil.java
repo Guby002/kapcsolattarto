@@ -27,16 +27,16 @@ public class JwtTokenUtil {
 		return Jwts.builder()
 				.setSubject((userPrincipal.getUsername()))
 				.setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() +1000))
-				.signWith(SignatureAlgorithm.RS512, rsaPrivateKey)
+				.setExpiration(new Date((new Date()).getTime() +1000000000))
+				.signWith(SignatureAlgorithm.RS256, rsaPrivateKey)
 				.compact();
 	}
 	public String getUserNameFromJwtToken(String token) {
-		return Jwts.parser().setSigningKey(rsaPrivateKey).parseClaimsJws(token).getBody().getSubject();
+		return Jwts.parser().setSigningKey(rsaPublicKey).parseClaimsJws(token).getBody().getSubject();
 	}
 	public boolean validateJwtToken(String authToken) {
 		try {
-			Jwts.parser().setSigningKey(rsaPrivateKey).parseClaimsJws(authToken);
+			Jwts.parser().setSigningKey(rsaPublicKey).parseClaimsJws(authToken);
 			return true;
 		} catch (SignatureException e) {
 			logger.error("Invalid JWT signature: {}", e.getMessage());
