@@ -52,11 +52,11 @@ public class TestForPaging {
     public void testGetExample() throws Exception {
         List<ContactForListDTO> contracts = new ArrayList<>();
         ContactMapperImpl contractMapper = new ContactMapperImpl();
-        Company company = new Company(1L, "as");
+        CompanyDTO company = new CompanyDTO(1L, "as");
         ZonedDateTime d2 = now();
         ZonedDateTime d1 = now();
-        Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
-
+        ContactDTO contactDTO = new ContactDTO(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
+        Contact contact=contractMapper.toContact(contactDTO);
         contracts.add(contractMapper.toContactForListDto(contact));
         contactService.save(contractMapper.toContactDto(contact));
         Mockito.when(contactService.findTenForUser(1)).thenReturn(contracts);

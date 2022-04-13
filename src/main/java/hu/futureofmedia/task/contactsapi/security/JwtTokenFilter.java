@@ -1,8 +1,7 @@
 package hu.futureofmedia.task.contactsapi.security;
 
 import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,18 +20,13 @@ import java.util.List;
 import static org.aspectj.util.LangUtil.isEmpty;
 
 @Component
+@AllArgsConstructor
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private JwtTokenUtil jwtTokenUtil;
+    private final JwtTokenUtil jwtTokenUtil;
 
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
-    public JwtTokenFilter(JwtTokenUtil jwtTokenUtil, UserDetailsServiceImpl userDetailsService) {
-        this.jwtTokenUtil = jwtTokenUtil;
-        this.userDetailsService = userDetailsService;
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {

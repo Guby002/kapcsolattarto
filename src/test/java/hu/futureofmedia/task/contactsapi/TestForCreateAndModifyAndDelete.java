@@ -80,7 +80,7 @@ public class TestForCreateAndModifyAndDelete {
                 .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(jsonPath("$").value(1));
 assertEquals(contactService.findById(1L).getFirstName(),"Lali");
-    }//asserequals with strings objecmapper.readvalue
+    }
 
     @Test
     public void whenPostRequestToContactorsAndValidContactor_thenCorrectResponse() throws Exception {

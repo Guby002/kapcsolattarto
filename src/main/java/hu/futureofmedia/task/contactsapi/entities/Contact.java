@@ -36,14 +36,14 @@ public class Contact{
     @Column
     private String comment;
 
-    @Column(name="stat")
+    @Column(name="status")
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(name = "created_date", nullable = false)
     private ZonedDateTime createDate;;
 
-    @Column(name = "last_modified_date_time", nullable = false)
+    @Column(name = "last_modified", nullable = false)
     private ZonedDateTime lastModify;
 
     @PreUpdate

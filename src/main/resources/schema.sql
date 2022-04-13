@@ -13,9 +13,9 @@ create table contact
     phoneNumber varchar(200) not null,
     company_id bigint,
     comment varchar(400) not null,
-    stat varchar(400),
+    status varchar(400),
     created_date date,
-    last_modified_date_time date
+    last_modified date
 );
 create table company
 (
