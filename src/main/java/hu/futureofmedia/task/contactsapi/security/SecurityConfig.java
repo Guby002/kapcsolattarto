@@ -3,7 +3,6 @@ package hu.futureofmedia.task.contactsapi.security;
 import hu.futureofmedia.task.contactsapi.entities.RoleName;
 import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,13 +16,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static java.lang.String.format;
 
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(
-      //  securedEnabled = true,
-     //   jsr250Enabled = true,
+        securedEnabled = true,
+        jsr250Enabled = true,
         prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -44,10 +42,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
     @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/swagger-ui/**", "/v3/api-docs/**");
-    }
-    @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
@@ -56,29 +50,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/public/login","/api/public/register").permitAll()
-                .antMatchers(
-                        HttpMethod.GET,
-//                        "/",
-                        "/v2/api-docs",           // swagger
-                        "/webjars/**",            // swagger-ui webjars
-                        "/swagger-ui/**",  // swagger-ui resources
-                        "/rest-api-docs/**",
-                        "/configuration/**",      // swagger configuration
-                        "/*.html",
-                        "/favicon.ico",
-                        "/**/*.html",
-                        "/**/*.css",
-                        "/**/*.js"
-                ).permitAll()
-
-               // .antMatchers("/api/contact/**").permitAll()
+                .antMatchers(HttpMethod.GET, "/v2/api-docs","/webjars/**", "/swagger-ui/**").permitAll()
                 //PRIVATE ENDPOINTS
-                .antMatchers(HttpMethod.GET, "/api/contact/**").permitAll()
-                .antMatchers(HttpMethod.PUT, "/api/**").hasAnyRole(RoleName.ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/api/contact/**").permitAll()//.hasRole(RoleName.ADMIN.name())
-                .antMatchers(HttpMethod.POST, "/api/contact/**").hasAuthority(RoleName.USER.name())//.hasRole(RoleName.ADMIN.name())
-                .antMatchers(HttpMethod.POST, "/api/contact/user/**").permitAll()//.hasRole(RoleName.ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/api/contact/user/**").hasRole(RoleName.ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/api/contact/**").hasAnyAuthority(RoleName.USER.name(),RoleName.ADMIN.name())
+                .antMatchers(HttpMethod.PUT, "/api/contact/**").hasAnyAuthority(RoleName.ADMIN.name(),RoleName.USER.name())
+                .antMatchers(HttpMethod.DELETE, "/api/contact/**").hasAuthority(RoleName.ADMIN.name())
+                .antMatchers(HttpMethod.POST, "/api/contact").hasAuthority(RoleName.ADMIN.name())
+                .antMatchers(HttpMethod.GET, "/api/contact/user/**").hasAuthority(RoleName.ADMIN.name())
                 .anyRequest().authenticated();
         http.addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }

@@ -2,12 +2,12 @@ package hu.futureofmedia.task.contactsapi.controller;
 
 import hu.futureofmedia.task.contactsapi.DTO.LoginDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
+import hu.futureofmedia.task.contactsapi.entities.JwtResponse;
 import hu.futureofmedia.task.contactsapi.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,8 +22,8 @@ public class AuthApi {
     protected final Log logger = LogFactory.getLog(getClass());
     public final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginDTO loginDTO) {
+    @PostMapping(value = "/login")
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginDTO loginDTO) {
         logger.info("Logging in");
         return userService.login(loginDTO);
     }
