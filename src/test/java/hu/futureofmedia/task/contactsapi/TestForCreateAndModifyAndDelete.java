@@ -70,7 +70,7 @@ public class TestForCreateAndModifyAndDelete {
         modifiedContactDTO.setFirstName("Lali");
         String json = objectMapper.writeValueAsString(modifiedContactDTO);
         contactService.save(contactDTO);
-       this.mockMvc.perform(put("/contacts/{id}", 1L)
+       this.mockMvc.perform(put("/api/contact/{id}", 1L)
                 .contentType("application/json")
                 .content(json)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ public class TestForCreateAndModifyAndDelete {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
             .andExpect(jsonPath("$").value(1));
-assertEquals(contactService.findById(1L).getFirstName(),"Lali");
+        assertEquals(contactService.findById(1L).getFirstName(),"Lali");
     }
 
     @Test
@@ -90,7 +90,7 @@ assertEquals(contactService.findById(1L).getFirstName(),"Lali");
                 .build();
         String json = objectMapper.writeValueAsString(contactDTO);
         MockHttpServletRequestBuilder builder =
-                post("/contacts")
+                post("/api/contact")
                         .contentType("application/json")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -109,7 +109,7 @@ assertEquals(contactService.findById(1L).getFirstName(),"Lali");
                 .addModule(new JavaTimeModule())
                 .build();
         contactService.save(createForTest());
-        MvcResult result = mockMvc.perform(get("/contacts/1")
+        MvcResult result = mockMvc.perform(get("/api/contact/foruser/1")
                         .contentType("application/json")
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
@@ -125,7 +125,7 @@ assertEquals(contactService.findById(1L).getFirstName(),"Lali");
     @Test
     public void whenDeleteRequestToContactorsAndValidId_thenCorrectResponse() throws Exception {
         contactService.save(createForTest());
-        mockMvc.perform(MockMvcRequestBuilders.delete("/contacts/{id}",1))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/contact/{id}",1))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -141,7 +141,7 @@ assertEquals(contactService.findById(1L).getFirstName(),"Lali");
         contactService.save(contactDTO);
         String json = objectMapper.writeValueAsString(contactDTO);
         MockHttpServletRequestBuilder builder =
-                post("/contacts")
+                post("/api/contact")
                         .contentType("application/json")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -163,7 +163,7 @@ assertEquals(contactService.findById(1L).getFirstName(),"Lali");
         contactDTO.setSecondName("");
         String json = objectMapper.writeValueAsString(contactDTO);
         MockHttpServletRequestBuilder builder =
-                post("/contacts")
+                post("/api/contact")
                         .contentType("application/json")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -185,7 +185,7 @@ assertEquals(contactService.findById(1L).getFirstName(),"Lali");
 
         String json = objectMapper.writeValueAsString(contactDTO);
         MockHttpServletRequestBuilder builder =
-                post("/contacts")
+                post("/api/contact")
                         .contentType("application/json")
                         .content(json)
                         .contentType(MediaType.APPLICATION_JSON)

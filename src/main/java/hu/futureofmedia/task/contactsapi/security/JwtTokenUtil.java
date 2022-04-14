@@ -21,7 +21,7 @@ public class JwtTokenUtil {
 	private RSAPrivateKey rsaPrivateKey;
 
 	Logger logger = LoggerFactory.getLogger(JwtTokenUtil.class);
-
+	//generate JWT token for authentication
 	public String generateJwtToken(Authentication authentication) {
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 		return Jwts.builder()

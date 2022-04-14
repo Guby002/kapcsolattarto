@@ -1,10 +1,10 @@
 package hu.futureofmedia.task.contactsapi.service;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import hu.futureofmedia.task.contactsapi.entities.Privilege;
+import hu.futureofmedia.task.contactsapi.entities.Role;
 import hu.futureofmedia.task.contactsapi.entities.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -28,9 +28,16 @@ public class UserDetailsImpl implements UserDetails {
 		this.authorities = authorities;
 	}
 	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = user.getRoles().stream()
-				.map(role -> new SimpleGrantedAuthority(role.getName().name()))
-				.collect(Collectors.toList());
+		List<GrantedAuthority> authorities = null;
+		List<Privilege> privileges ;
+
+		for(Role userToRole : user.getRoles()) {
+			privileges= (userToRole.getPrivileges().stream().collect(Collectors.toList()));
+			for(Privilege privilegesFromRole :privileges){
+				authorities.add(new SimpleGrantedAuthority(privilegesFromRole.getName().name()));
+			}
+		}
+
 		return new UserDetailsImpl(
 				user.getId(), 
 				user.getUsername(), 
