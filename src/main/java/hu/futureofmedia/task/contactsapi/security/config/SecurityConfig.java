@@ -70,9 +70,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/api/auth/login","/api/auth/register").permitAll()
                 //PRIVATE ENDPOINTS
-                .antMatchers(HttpMethod.GET, "/api/contact/foruser/**").hasAnyAuthority(RoleName.USER.name(),RoleName.ADMIN.name())
+              .antMatchers(HttpMethod.GET, "/api/contact/foruser/**").hasAnyAuthority(RoleName.USER.name(),RoleName.ADMIN.name())
                 .antMatchers(HttpMethod.PUT, "/api/contact/**").hasAnyAuthority(RoleName.ADMIN.name(),RoleName.USER.name())
-                .antMatchers(HttpMethod.DELETE, "/api/contact/**").hasAuthority(RoleName.ADMIN.name())
+                .antMatchers(HttpMethod.DELETE, "/api/contact/**").hasAuthority("DELETE")
                 .antMatchers(HttpMethod.POST, "/api/contact").hasAuthority(RoleName.ADMIN.name())
                 .antMatchers(HttpMethod.GET, "/api/contact/user/**").hasAuthority(RoleName.ADMIN.name())
                 .anyRequest().authenticated();

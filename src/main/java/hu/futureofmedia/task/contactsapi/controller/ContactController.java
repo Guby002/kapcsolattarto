@@ -26,7 +26,6 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.List;
-
 @Tag(name = "ContactController")
 @RestController
 @RequiredArgsConstructor
@@ -39,17 +38,20 @@ public class ContactController {
     private final UserDetailsService userDetailsService;
     Logger logger = LoggerFactory.getLogger(ContactController.class);
     @GetMapping("/foruser")
+ //   @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     public List<ContactForListDTO> findTenForUser(@RequestParam("pageNo") int pageNo){
         logger.info("10 Contact/page GetMapping");
         return contactService.findTenForUser(pageNo);
     }
     @GetMapping("/foruser/{id}")
+   // @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     public ContactDTO findContactById(@PathVariable("id") Long id) throws RecordNotFoundException {
         logger.info("single Contact GetMapping");
         return contactService.findById(id);
     }
 
     @DeleteMapping("/{id}")
+//    @Secured({"ROLE_ADMIN"})
     public void delete(@PathVariable Long id) throws SQLException {
         logger.info("single Contact DeleteMapping");
         contactService.delete(id);
@@ -57,17 +59,20 @@ public class ContactController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
+ //   @PreAuthorize("hasRole('ROLE_ADMIN')")
     public Long createContractor(@Valid @RequestBody ContactDTO contactDTO){
         logger.info("single Contact PostMapping");
         return contactService.save(contactDTO);
     }
 
     @PutMapping("{id}")
+//    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_USER')")
     public Long updateContactor(@PathVariable ("id") Long id,@Valid @RequestBody ContactDTO contactDTO) throws SQLException {
         logger.info("single Contact PutMapping");
         return contactService.update(id,contactDTO);
     }
     @GetMapping("/user/{username}")
+ //   @PreAuthorize("hasRole('ROLE_ADMIN')")
     public UserDTO findRegistratedUser(@PathVariable ("username") String username){
         logger.info("find registered user // just ADMIN ROLE");
         return userMapper.userDetailsToUserDTO(userDetailsService.loadUserByUsername(username));

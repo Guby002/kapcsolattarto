@@ -55,12 +55,14 @@ public class TestForPaging {
         CompanyDTO company = new CompanyDTO(1L, "as");
         ZonedDateTime d2 = now();
         ZonedDateTime d1 = now();
-        ContactDTO contactDTO = new ContactDTO(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.ACTIVE, d1, d2);
+        ContactDTO contactDTO = new ContactDTO(1L, "Nagyon", "Almos", "ha@hah.hu", "11231120", company, "ha", Status.ACTIVE, d1, d2);
+        contactService.save(contactDTO);
         Contact contact=contractMapper.toContact(contactDTO);
+        //contactService.save(contractMapper.toContactDto(contact));
         contracts.add(contractMapper.toContactForListDto(contact));
-        contactService.save(contractMapper.toContactDto(contact));
+
         Mockito.when(contactService.findTenForUser(1)).thenReturn(contracts);
-        mockMvc.perform(get("/contacts").param("pageNo", "1"))
+        mockMvc.perform(get("/api/contact/foruser/").param("pageNo", "1"))
                 .andExpect(status().isOk())
                 .andDo(print())
                 .andExpect(jsonPath("$[0].name").value("Nagyon Almos"));
@@ -77,7 +79,7 @@ public class TestForPaging {
         Contact contact = new Contact(1L, "Nagyon", "Almos", "ha@hah.hu", "1120120", company, "ha", Status.DELETED, d1, d2);
 
         contracts.add(contractMapper.toContactForListDto(contact));
-        MvcResult result = mockMvc.perform(get("/contacts").param("pageNo", "1"))
+        MvcResult result = mockMvc.perform(get("/api/contact/foruser").param("pageNo", "1"))
                 .andExpect(status().isOk())
                 .andReturn();
         String actualJson = result.getResponse().getContentAsString();
