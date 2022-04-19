@@ -1,22 +1,18 @@
 package hu.futureofmedia.task.contactsapi.security.config;
 
-import hu.futureofmedia.task.contactsapi.entities.Privilege;
-import hu.futureofmedia.task.contactsapi.entities.PrivilegeName;
-import hu.futureofmedia.task.contactsapi.entities.RoleName;
 import hu.futureofmedia.task.contactsapi.security.AuthEntryPointJwt;
 import hu.futureofmedia.task.contactsapi.security.Encoder;
+
 import hu.futureofmedia.task.contactsapi.security.JwtTokenFilter;
 import hu.futureofmedia.task.contactsapi.security.JwtTokenUtil;
 import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -71,12 +67,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //PUBLIC ENDPOINTS
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/api/auth/login","/api/auth/register").permitAll()
-                //PRIVATE ENDPOINTS
-              /*.antMatchers(HttpMethod.GET, "/api/contact/foruser/**").hasAnyAuthority(PrivilegeName.LIST.name())
-                .antMatchers(HttpMethod.PUT, "/api/contact/**").hasAnyAuthority(PrivilegeName.MODIFY.name())
-                .antMatchers(HttpMethod.DELETE, "/api/contact/**").hasAuthority(PrivilegeName.DELETE.name())
-                .antMatchers(HttpMethod.POST, "/api/contact").hasAuthority(PrivilegeName.CREATE.name())
-                .antMatchers(HttpMethod.GET, "/api/contact/user/**").hasAuthority(PrivilegeName.GET_USER_DATA.name())*/
                 .anyRequest().authenticated();
         http.addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
