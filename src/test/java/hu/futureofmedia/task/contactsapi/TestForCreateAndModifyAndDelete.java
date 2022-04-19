@@ -134,7 +134,6 @@ public class TestForCreateAndModifyAndDelete {
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/contact/{id}",1))
                 .andDo(print())
                 .andExpect(status().isOk());
-
     }
     ///SHOUD throw exception
     @Test

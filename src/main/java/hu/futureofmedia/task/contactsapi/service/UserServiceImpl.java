@@ -11,6 +11,7 @@ import hu.futureofmedia.task.contactsapi.security.Encoder;
 import hu.futureofmedia.task.contactsapi.security.JwtTokenUtil;
 import lombok.AllArgsConstructor;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -36,7 +37,7 @@ public class UserServiceImpl implements UserService{
     private final RoleRepository roleRepository;
     private final Encoder encoder;
     private final UserMapper userMapper;
-
+    @Override
     @Transactional
     public ResponseEntity<JwtResponse> login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
@@ -55,6 +56,14 @@ public class UserServiceImpl implements UserService{
                 roles));
     }
 
+    @Override
+    @Transactional
+    public void delete(String username) throws SQLException {
+        User user = userRepository.getById(userRepository.findByUsername(username).get().getId());
+        userRepository.delete(user);
+        logger.debug("User deleted");
+    }
+    @Override
     @Transactional
     public ResponseEntity<?> userRegistration(RegisterUserDTO newUserDTO) {
         if (userRepository.existsByUsername(newUserDTO.getUsername())) {
@@ -80,4 +89,5 @@ public class UserServiceImpl implements UserService{
         userRepository.save(userMapper.userDTOToUser(user));
         return ResponseEntity.ok("User registered successfully!");
     }
+
 }
