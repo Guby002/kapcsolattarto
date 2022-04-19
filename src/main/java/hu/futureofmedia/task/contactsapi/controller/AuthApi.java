@@ -1,7 +1,7 @@
 package hu.futureofmedia.task.contactsapi.controller;
 
 import hu.futureofmedia.task.contactsapi.DTO.LoginDTO;
-import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
+import hu.futureofmedia.task.contactsapi.DTO.RegisterUserDTO;
 import hu.futureofmedia.task.contactsapi.entities.JwtResponse;
 import hu.futureofmedia.task.contactsapi.service.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,8 +28,8 @@ public class AuthApi {
         return userService.login(loginDTO);
     }
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody UserDTO request) {
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterUserDTO request) {
         logger.info("User registration");
-        return userService.registration(request);
+        return userService.userRegistration(request);
     }
 }

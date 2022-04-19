@@ -16,7 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import org.springframework.test.web.servlet.MvcResult;
@@ -30,6 +32,7 @@ import java.time.ZonedDateTime;
 
 
 import static java.time.ZonedDateTime.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,6 +63,7 @@ public class TestForCreateAndModifyAndDelete {
         ContactDTO contactDTO = new ContactDTO(1L, "Nagyon", "Almos", "ha@hah.hu", "11231120", company, "ha", Status.ACTIVE, d1, d2);
         return contactDTO;
     }
+    @WithMockUser(authorities = "MODIFY" )
     @Test
     public void whenPutRequestToContactorsAndValidContactor_thenCorrectResponse() throws Exception {
         ObjectMapper objectMapper = JsonMapper.builder()
@@ -77,12 +81,12 @@ public class TestForCreateAndModifyAndDelete {
                 .accept(MediaType.APPLICATION_JSON)
                 .characterEncoding("utf-8"))
                 .andDo(print())
-                .andExpect(MockMvcResultMatchers.status().isOk())
-            .andExpect(jsonPath("$").value(1));
+                .andExpect(MockMvcResultMatchers.status().isOk());
         assertEquals(contactService.findById(1L).getFirstName(),"Lali");
     }
 
     @Test
+    @WithMockUser(authorities = "CREATE")
     public void whenPostRequestToContactorsAndValidContactor_thenCorrectResponse() throws Exception {
         ContactDTO contactDTO = createForTest();
         ObjectMapper objectMapper = JsonMapper.builder()
@@ -104,6 +108,7 @@ public class TestForCreateAndModifyAndDelete {
     }
 
     @Test
+    @WithMockUser(authorities = "LIST")
     public void whenGetRequestToContactorsAndValidId_thenCorrectResponse() throws Exception {
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
@@ -123,6 +128,7 @@ public class TestForCreateAndModifyAndDelete {
 
 
     @Test
+    @WithMockUser(authorities = "DELETE")
     public void whenDeleteRequestToContactorsAndValidId_thenCorrectResponse() throws Exception {
         contactService.save(createForTest());
         mockMvc.perform(MockMvcRequestBuilders.delete("/api/contact/{id}",1))
@@ -132,6 +138,7 @@ public class TestForCreateAndModifyAndDelete {
     }
     ///SHOUD throw exception
     @Test
+    @WithMockUser(authorities = "CREATE" )
     public void whenPostRequestToContactorsAndValidContactor_thenThrowException_CauseEmptyFirstName() throws Exception {
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
@@ -154,6 +161,7 @@ public class TestForCreateAndModifyAndDelete {
 
     }
     @Test
+    @WithMockUser(authorities = "CREATE")
     public void whenPostRequestToContactorsAndValidContactor_thenThrowException_CauseEmptySecondName()throws Exception{
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())
@@ -175,6 +183,7 @@ public class TestForCreateAndModifyAndDelete {
                 .andExpect(jsonPath("$.errors").value("secondName: validation.required.second-name"));
     }
     @Test
+    @WithMockUser(authorities = "CREATE" )
     public void whenPostRequestToContactorsAndValidContactor_thenThrowException_CauseWrongPhoneNumber() throws Exception {
         ObjectMapper objectMapper = JsonMapper.builder()
                 .addModule(new JavaTimeModule())

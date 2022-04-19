@@ -1,5 +1,6 @@
 package hu.futureofmedia.task.contactsapi.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import hu.futureofmedia.task.contactsapi.entities.Role;
 import lombok.*;
 
@@ -20,5 +21,6 @@ public class UserDTO {
     private String password;
     @Email(message = "validation.required.user.mail")
     private String email;
-    private Set<Role> role = new HashSet<>();
+    @NotBlank(message = "validation.required.user.role")
+    private Set<Role> roles = new HashSet<>();
 }

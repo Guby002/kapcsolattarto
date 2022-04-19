@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi.mapper;
 
-import hu.futureofmedia.task.contactsapi.DTO.RegistrateUserDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
 import hu.futureofmedia.task.contactsapi.entities.Role;
 import hu.futureofmedia.task.contactsapi.entities.User;
@@ -14,6 +13,6 @@ import java.util.Set;
 public interface UserMapper{
     User userDTOToUser(UserDTO userDTO);
     UserDTO userToUserDTO(User user);
-    User registrateUserDTOToUser (RegistrateUserDTO registrateUserDTO, Set<Role> roles);
+    //User registrateUserDTOToUser (RegistrateUserDTO registrateUserDTO, Role role);
     UserDTO userDetailsToUserDTO(UserDetails userDetails);
 }

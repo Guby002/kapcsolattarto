@@ -1,4 +1,4 @@
-insert into company (id,name) values (1,'Company #1');
+/*insert into company (id,name) values (1,'Company #1');
 insert into company (id,name) values (2,'Company #2');
 insert into company (id,name) values(3,'Company #3');
 
@@ -24,4 +24,4 @@ insert into privileges(name) values
     ('GET_USER_DATA');
 
 insert into role_privileges (role_id, privileges_id) values (1,1),(1,2),(1,3),(1,4),(1,5),
-                                                            (2,2);
+                                                            (2,2);*/

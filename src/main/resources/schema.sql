@@ -1,4 +1,4 @@
- DROP TABLE IF EXISTS user_roles;
+/* DROP TABLE IF EXISTS user_roles;
 DROP TABLE IF EXISTS role_privileges;
  DROP TABLE IF EXISTS users;
  DROP TABLE IF EXISTS roles CASCADE;
@@ -58,6 +58,6 @@ CREATE TABLE role_privileges(
   FOREIGN KEY(role_id) REFERENCES roles(id),
   FOREIGN KEY(privileges_id) REFERENCES privileges(id)
 );
-
+*/
 
 

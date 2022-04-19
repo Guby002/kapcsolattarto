@@ -18,6 +18,7 @@ public class Role {
     private Integer id;
     @Enumerated(EnumType.STRING)
     private RoleName name;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "role_privileges",
             joinColumns = @JoinColumn(name = "role_id"),
