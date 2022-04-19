@@ -86,8 +86,8 @@ public class ContactServiceImpl implements ContactService  {
     }
 
     @Transactional(readOnly = true)
-    private Contact findContact(Long id){
+    public Contact findContact(Long id){
         logger.debug("Search for one contact by Id");
-        return contactRepository.findById(id).orElseThrow(RecordNotFoundException::new);
+        return contactRepository.findContactById(id).orElseThrow(RecordNotFoundException::new);
     }
 }

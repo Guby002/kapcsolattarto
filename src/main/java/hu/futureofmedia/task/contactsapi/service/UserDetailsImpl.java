@@ -6,10 +6,13 @@ import java.util.stream.Collectors;
 import hu.futureofmedia.task.contactsapi.entities.Privilege;
 import hu.futureofmedia.task.contactsapi.entities.Role;
 import hu.futureofmedia.task.contactsapi.entities.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 public class UserDetailsImpl implements UserDetails {
 	private static final long serialVersionUID = 1L;
@@ -28,11 +31,11 @@ public class UserDetailsImpl implements UserDetails {
 		this.authorities = authorities;
 	}
 	public static UserDetailsImpl build(User user) {
-		List<GrantedAuthority> authorities = null;
-		List<Privilege> privileges ;
+		List<GrantedAuthority> authorities = new ArrayList<>();;
+		Set<Privilege> privileges = new HashSet<>();;
 
 		for(Role userToRole : user.getRoles()) {
-			privileges= (userToRole.getPrivileges().stream().collect(Collectors.toList()));
+			privileges = userToRole.getPrivileges();
 			for(Privilege privilegesFromRole :privileges){
 				authorities.add(new SimpleGrantedAuthority(privilegesFromRole.getName().name()));
 			}

@@ -1,12 +1,9 @@
 package hu.futureofmedia.task.contactsapi.service;
 
 import hu.futureofmedia.task.contactsapi.DTO.LoginDTO;
-import hu.futureofmedia.task.contactsapi.DTO.RegistrateUserDTO;
+import hu.futureofmedia.task.contactsapi.DTO.RegisterUserDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
-import hu.futureofmedia.task.contactsapi.entities.JwtResponse;
-import hu.futureofmedia.task.contactsapi.entities.Role;
-import hu.futureofmedia.task.contactsapi.entities.RoleName;
-import hu.futureofmedia.task.contactsapi.entities.User;
+import hu.futureofmedia.task.contactsapi.entities.*;
 import hu.futureofmedia.task.contactsapi.mapper.UserMapper;
 import hu.futureofmedia.task.contactsapi.repositories.RoleRepository;
 import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
@@ -59,34 +56,28 @@ public class UserServiceImpl implements UserService{
     }
 
     @Transactional
-    public ResponseEntity<?> registration(UserDTO userDTO) {
-        if (userRepository.existsByUsername(userDTO.getUsername())) {
+    public ResponseEntity<?> userRegistration(RegisterUserDTO newUserDTO) {
+        if (userRepository.existsByUsername(newUserDTO.getUsername())) {
             return ResponseEntity
                     .badRequest()
                     .body("Error: Username is already taken!");
         }
-        if (userRepository.existsByEmail(userDTO.getEmail())) {
+        if (userRepository.existsByEmail(newUserDTO.getEmail())) {
             return ResponseEntity
                     .badRequest()
                     .body("Error: Email is already in use!");
         }
         // Create new user's account
-        RegistrateUserDTO  registrateUserDTO = new RegistrateUserDTO(userDTO.getUsername(),
-                encoder.passwordEncoder().encode(userDTO.getPassword()),
-                userDTO.getEmail());
-        logger.info("Password: {}", registrateUserDTO.getPassword());
-        Set<String> strRoles = (userDTO.getRole().stream()
-                .map(s -> s.getName().toString())
-                .collect(Collectors.toSet()));
-        logger.info("ROLES {}", strRoles);
         Set<Role> roles = new HashSet<>();
-        if (strRoles.isEmpty()) {
-            Role userRole = roleRepository.findRoledByName(RoleName.USER);
-            roles.add(userRole);
-        }
-        User user = userMapper.registrateUserDTOToUser(registrateUserDTO, roles);
-        userRepository.save(user);
-        logger.info("ROLES {}", user.getRoles().size());
+        roles.add(roleRepository.findRoleByName(RoleName.USER));
+        UserDTO user = new UserDTO();
+        user.setUsername(newUserDTO.getUsername());
+
+        user.setPassword(encoder.passwordEncoder().encode(newUserDTO.getPassword()));
+        user.setEmail(newUserDTO.getEmail());
+
+        user.setRoles(roles);
+        userRepository.save(userMapper.userDTOToUser(user));
         return ResponseEntity.ok("User registered successfully!");
     }
 }

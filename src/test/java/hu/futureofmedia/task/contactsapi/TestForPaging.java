@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -49,6 +50,7 @@ public class TestForPaging {
     }
 
     @Test
+    @WithMockUser(authorities = "LIST")
     public void testGetExample() throws Exception {
         List<ContactForListDTO> contracts = new ArrayList<>();
         ContactMapperImpl contractMapper = new ContactMapperImpl();
@@ -70,6 +72,7 @@ public class TestForPaging {
     }
 
     @Test
+    @WithMockUser(authorities = "LIST")
     public void testGetExampleFalse() throws Exception {
         List<ContactForListDTO> contracts = new ArrayList<>();
         ContactMapperImpl contractMapper = new ContactMapperImpl();
@@ -88,6 +91,7 @@ public class TestForPaging {
     }
 
     @Test
+    @WithMockUser(authorities = "LIST")
     public void testForSecondPageExample() throws Exception {
         CompanyDTO company = new CompanyDTO(1L, "as");
         ZonedDateTime d2 = now();

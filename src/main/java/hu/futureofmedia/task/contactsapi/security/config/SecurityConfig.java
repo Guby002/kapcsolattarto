@@ -1,5 +1,7 @@
 package hu.futureofmedia.task.contactsapi.security.config;
 
+import hu.futureofmedia.task.contactsapi.entities.Privilege;
+import hu.futureofmedia.task.contactsapi.entities.PrivilegeName;
 import hu.futureofmedia.task.contactsapi.entities.RoleName;
 import hu.futureofmedia.task.contactsapi.security.AuthEntryPointJwt;
 import hu.futureofmedia.task.contactsapi.security.Encoder;
@@ -70,11 +72,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/api/auth/login","/api/auth/register").permitAll()
                 //PRIVATE ENDPOINTS
-              .antMatchers(HttpMethod.GET, "/api/contact/foruser/**").hasAnyAuthority(RoleName.USER.name(),RoleName.ADMIN.name())
-                .antMatchers(HttpMethod.PUT, "/api/contact/**").hasAnyAuthority(RoleName.ADMIN.name(),RoleName.USER.name())
-                .antMatchers(HttpMethod.DELETE, "/api/contact/**").hasAuthority("DELETE")
-                .antMatchers(HttpMethod.POST, "/api/contact").hasAuthority(RoleName.ADMIN.name())
-                .antMatchers(HttpMethod.GET, "/api/contact/user/**").hasAuthority(RoleName.ADMIN.name())
+              /*.antMatchers(HttpMethod.GET, "/api/contact/foruser/**").hasAnyAuthority(PrivilegeName.LIST.name())
+                .antMatchers(HttpMethod.PUT, "/api/contact/**").hasAnyAuthority(PrivilegeName.MODIFY.name())
+                .antMatchers(HttpMethod.DELETE, "/api/contact/**").hasAuthority(PrivilegeName.DELETE.name())
+                .antMatchers(HttpMethod.POST, "/api/contact").hasAuthority(PrivilegeName.CREATE.name())
+                .antMatchers(HttpMethod.GET, "/api/contact/user/**").hasAuthority(PrivilegeName.GET_USER_DATA.name())*/
                 .anyRequest().authenticated();
         http.addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
