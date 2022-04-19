@@ -1,5 +1,7 @@
 package hu.futureofmedia.task.contactsapi.controller;
 import hu.futureofmedia.task.contactsapi.DTO.ApiError;
+import hu.futureofmedia.task.contactsapi.exceptions.IncorrectEmailException;
+import hu.futureofmedia.task.contactsapi.exceptions.IncorrectUserNameException;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -45,5 +47,11 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, "Not found",
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
-
+    @ExceptionHandler({ IncorrectEmailException.class, IncorrectUserNameException.class})
+    protected ResponseEntity<Object> handleWrongUserNameOrEmail(
+            Exception ex, WebRequest request) {
+        logger.error("Wrong user name or email");
+        return handleExceptionInternal(ex, ex.getMessage(),
+                new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE, request);
+    }
 }

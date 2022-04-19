@@ -4,6 +4,9 @@ import hu.futureofmedia.task.contactsapi.DTO.LoginDTO;
 import hu.futureofmedia.task.contactsapi.DTO.RegisterUserDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
 import hu.futureofmedia.task.contactsapi.entities.*;
+import hu.futureofmedia.task.contactsapi.exceptions.IncorrectEmailException;
+import hu.futureofmedia.task.contactsapi.exceptions.IncorrectUserNameException;
+import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import hu.futureofmedia.task.contactsapi.mapper.UserMapper;
 import hu.futureofmedia.task.contactsapi.repositories.RoleRepository;
 import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
@@ -37,9 +40,10 @@ public class UserServiceImpl implements UserService{
     private final RoleRepository roleRepository;
     private final Encoder encoder;
     private final UserMapper userMapper;
+
     @Override
     @Transactional
-    public ResponseEntity<JwtResponse> login(LoginDTO loginDTO) {
+    public JwtResponse login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -49,34 +53,30 @@ public class UserServiceImpl implements UserService{
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
                 .collect(Collectors.toList());
-        return ResponseEntity.ok(new JwtResponse(jwt,
+        return new JwtResponse(jwt,
                 userDetails.getId(),
                 userDetails.getUsername(),
                 userDetails.getEmail(),
-                roles));
+                roles);
     }
 
     @Override
     @Transactional
-    public void delete(String username) throws SQLException {
-        User user = userRepository.getById(userRepository.findByUsername(username).get().getId());
+    public void delete(String username) {
+        User user = findUser(username);
         userRepository.delete(user);
         logger.debug("User deleted");
     }
+
     @Override
     @Transactional
-    public ResponseEntity<?> userRegistration(RegisterUserDTO newUserDTO) {
+    public String userRegistration(RegisterUserDTO newUserDTO) throws IncorrectUserNameException, IncorrectEmailException {
         if (userRepository.existsByUsername(newUserDTO.getUsername())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Username is already taken!");
+            throw new IncorrectUserNameException("User name taken ");
         }
         if (userRepository.existsByEmail(newUserDTO.getEmail())) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("Error: Email is already in use!");
+            throw new IncorrectEmailException("Email taken");
         }
-        // Create new user's account
         Set<Role> roles = new HashSet<>();
         roles.add(roleRepository.findRoleByName(RoleName.USER));
         UserDTO user = new UserDTO();
@@ -87,7 +87,12 @@ public class UserServiceImpl implements UserService{
 
         user.setRoles(roles);
         userRepository.save(userMapper.userDTOToUser(user));
-        return ResponseEntity.ok("User registered successfully!");
+        return "User registered successfully!";
     }
 
+    @Transactional
+    public User findUser(String username){
+        logger.debug("Search for one user by UserName");
+        return userRepository.findUserByUsername(username).orElseThrow(RecordNotFoundException::new);
+    }
 }

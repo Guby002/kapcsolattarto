@@ -98,4 +98,13 @@ public class SecurityTest {
                 .andDo(print())
                 .andExpect(status().isOk());
     }
+ /*  @Test
+    @WithMockUser(authorities = "GET_USER_DATA")
+    public void whenPutRequestToUserAndValidUserName_ChangeRole() throws Exception {
+        userRepository.save(userMapper.userDTOToUser(creatUser()));
+        mockMvc.perform(MockMvcRequestBuilders.put("/api/contact/user/feri2"))
+                .andDo(print())
+                .andExpect(status().isOk());
+       userService.delete("feri2");
+    }*/
 }
