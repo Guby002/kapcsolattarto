@@ -1,10 +1,12 @@
 package hu.futureofmedia.task.contactsapi.service;
 import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
 import hu.futureofmedia.task.contactsapi.DTO.ContactForListDTO;
+import hu.futureofmedia.task.contactsapi.DTO.MailDTO;
 import hu.futureofmedia.task.contactsapi.controller.ContactController;
 import hu.futureofmedia.task.contactsapi.entities.Contact;
 import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
+import hu.futureofmedia.task.contactsapi.jms.JmsProducer;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 
@@ -26,7 +28,7 @@ public class ContactServiceImpl implements ContactService  {
     private final ContactMapper contactMapper;
     private final ContactRepository contactRepository;
     private final CompanyService companyService;
-
+    private final JmsProducer jmsProducer;
     Logger logger = LoggerFactory.getLogger(ContactController.class);
 
     @Override
@@ -37,6 +39,7 @@ public class ContactServiceImpl implements ContactService  {
         contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
         var id = contactRepository.save(contact).getId();
         logger.debug("New contactor saved ,contact:{}" ,contact);
+        jmsProducer.send(new MailDTO(contact.getCompany().getName(),contact.getEmail()));
         return id;
     }
 

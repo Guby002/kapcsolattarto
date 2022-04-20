@@ -8,11 +8,22 @@ services:
       POSTGRES_USER: contactsapi
       POSTGRES_PASSWORD: contactsapi
       POSTGRES_DB: contactsapi
-    volumes:
-      - /data.sql /docker-entrypoint-initdb.d/data.sql
-      - /schema.sql /docker-entrypoint-initdb.d/schema.sql
   mailhog:
     image: mailhog/mailhog
     ports:
       - 18025:8025
       - 11025:1025
+  activemq:
+    image: webcenter/activemq:5.14.3
+    ports:
+      # ui
+      - "8161:8161"
+      # jms
+      - "61616:61616"
+    environment:
+      ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT: "true"
+      ACTIVEMQ_ADMIN_LOGIN: admin
+      ACTIVEMQ_ADMIN_PASSWORD: password
+      ACTIVEMQ_ENABLED_SCHEDULER: "true"
+      ACTIVEMQ_MIN_MEMORY: 512
+      ACTIVEMQ_MAX_MEMORY: 2048

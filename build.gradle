@@ -14,6 +14,8 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.springframework:spring-jms:5.3.18'
+    implementation 'org.apache.activemq:activemq-spring:5.14.3'
     implementation 'org.springframework.boot:spring-boot-devtools'
     implementation 'com.auth0:java-jwt:3.19.1'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
@@ -21,9 +23,9 @@ dependencies {
             'io.jsonwebtoken:jjwt-jackson:0.11.2',
             'org.apache.commons:commons-lang3:3.12.0'
     implementation 'com.nimbusds:nimbus-jose-jwt:9.21'
-    runtimeOnly 'com.nimbusds:oauth2-oidc-sdk:9.31'
+    runtimeOnly 'com.nimbusds:oauth2-oidc-sdk:9.32'
     implementation group: 'com.googlecode.libphonenumber', name: 'libphonenumber', version: '8.12.45'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.7'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -34,14 +36,14 @@ dependencies {
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.springframework.security:spring-security-oauth2-resource-server:5.6.2'
     implementation 'org.springframework.security:spring-security-oauth2-jose:5.6.2'
-    implementation 'org.apache.logging.log4j:log4j-api:2.17.1'
+    implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
     implementation 'io.openliberty.features:com.ibm.websphere.appserver.jaxrsDefaultExceptionMapper-1.0:22.0.0.3'
     implementation "org.mapstruct:mapstruct:1.4.2.Final", 'org.projectlombok:lombok:1.18.22'
     implementation 'com.github.ivanovvlad9626:TestRail-RestAssured:0.5'
     implementation 'org.microprofile-ext.restclient-ext:configurable-errorresponse-handler:1.0.0'
     implementation 'junit:junit:4.13.2'
     implementation 'javax.servlet:javax.servlet-api:4.0.1'
-    implementation 'org.apache.maven:maven-plugin-api:3.8.4'
+    implementation 'org.apache.maven:maven-plugin-api:3.8.5'
     annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final", 'org.projectlombok:lombok:1.18.22', "org.projectlombok:lombok-mapstruct-binding:0.2.0"
     runtimeOnly 'org.postgresql:postgresql'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
