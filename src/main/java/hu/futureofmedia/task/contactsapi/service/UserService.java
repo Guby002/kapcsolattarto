@@ -13,5 +13,4 @@ public interface UserService {
     String userRegistration(RegisterUserDTO newUserDTO) throws IncorrectUserNameException, IncorrectEmailException;
     JwtResponse login(LoginDTO loginDTO);
     void delete(String username) throws SQLException;
-   // String changeRoleForUser(String username) throws SQLException;;
 }
