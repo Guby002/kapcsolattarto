@@ -18,5 +18,5 @@ public interface ContactMapper {
         contactForListDTO.setCompanyName(contact.getCompany().getName());
     }
     void updateContactFromContactDTO(ContactDTO contactDTO, @MappingTarget Contact contact);
-
+    Contact toContactFromContactForListDTO (ContactForListDTO contactForListDTO);
 }

@@ -37,7 +37,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/rest-api-docs/swagger-config/**"
+            "/rest-api-docs/swagger-config/**",
+            "/graphql/**"
             // other public endpoints of your API may be appended to this array
     };
 
@@ -67,6 +68,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 //PUBLIC ENDPOINTS
                 .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/api/auth/login","/api/auth/register").permitAll()
+                .antMatchers("/api/graph","/api/graph/**").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
