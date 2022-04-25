@@ -1,22 +1,13 @@
 package hu.futureofmedia.task.contactsapi;
 
-import hu.futureofmedia.task.contactsapi.DTO.CompanyDTO;
-import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
-import hu.futureofmedia.task.contactsapi.DTO.RegisterUserDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
-import hu.futureofmedia.task.contactsapi.entities.Contact;
 import hu.futureofmedia.task.contactsapi.entities.Role;
 import hu.futureofmedia.task.contactsapi.entities.RoleName;
-import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.mapper.ContactMapper;
 import hu.futureofmedia.task.contactsapi.mapper.UserMapper;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 import hu.futureofmedia.task.contactsapi.repositories.RoleRepository;
 import hu.futureofmedia.task.contactsapi.repositories.UserRepository;
-import hu.futureofmedia.task.contactsapi.service.CompanyService;
-import hu.futureofmedia.task.contactsapi.service.ContactService;
-import hu.futureofmedia.task.contactsapi.service.UserService;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,17 +20,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import static java.time.ZonedDateTime.now;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 @SpringBootTest
 @AutoConfigureMockMvc
 public class SecurityTest {
@@ -51,8 +38,6 @@ public class SecurityTest {
     private MockMvc mockMvc;
     @Autowired
     private WebApplicationContext webApplicationContext;
-    @Autowired
-    private UserService userService;
     @Autowired
     private UserMapper userMapper;
     @Autowired
@@ -82,7 +67,7 @@ public class SecurityTest {
     @Test
     @WithMockUser(authorities = "GET_USER_DATA")
     void withAdminProfileGetUserData() throws Exception {
-        this.mockMvc.perform(get("/api/contact/user/admin")
+        this.mockMvc.perform(get("/api/user/admin")
                         .contentType("application/json")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
@@ -94,17 +79,8 @@ public class SecurityTest {
     @WithMockUser(authorities = "GET_USER_DATA")
     public void whenDeleteRequestToUserAndValidUserName_thenCorrectResponse() throws Exception {
        userRepository.save(userMapper.userDTOToUser(creatUser()));
-        mockMvc.perform(MockMvcRequestBuilders.delete("/api/contact/user/feri2"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/user/feri2"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
- /*  @Test
-    @WithMockUser(authorities = "GET_USER_DATA")
-    public void whenPutRequestToUserAndValidUserName_ChangeRole() throws Exception {
-        userRepository.save(userMapper.userDTOToUser(creatUser()));
-        mockMvc.perform(MockMvcRequestBuilders.put("/api/contact/user/feri2"))
-                .andDo(print())
-                .andExpect(status().isOk());
-       userService.delete("feri2");
-    }*/
 }

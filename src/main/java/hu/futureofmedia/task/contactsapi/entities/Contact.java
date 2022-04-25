@@ -41,7 +41,7 @@ public class Contact{
     private Status status;
 
     @Column(name = "created_date", nullable = false)
-    private ZonedDateTime createDate;;
+    private ZonedDateTime createDate;
 
     @Column(name = "last_modified", nullable = false)
     private ZonedDateTime lastModify;
