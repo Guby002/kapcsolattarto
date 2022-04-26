@@ -1,0 +1,37 @@
+schema {
+    query: ContactQueries
+    mutation: ContactMutations
+}
+
+type ContactQueries {
+    findTenForUser(pageNo: Int): [Contact]
+    contact(id: Int): Contact
+}
+type ContactMutations{
+    newContact( firstName: String!,secondName: String!,email: String!, phoneNumber: String!,companyId: Int): String
+    updateContact(id: Int!, firstName: String!,secondName: String!,email: String!, phoneNumber: String!,companyId: Int): String
+    deleteContact(id: Int!) : String
+}
+scalar Boolean
+scalar String
+
+type Contact {
+    id: Int
+    firstName: String
+    secondName: String
+    email: String
+    phoneNumber: String
+    company: CompanyDTO
+    comment: String
+    status: String
+    createDate: String
+    lastModify: String
+}
+
+scalar Int
+type CompanyDTO{
+    id: Int
+    name: String
+}
+
+

@@ -53,6 +53,7 @@ public class Contact{
     @PrePersist
     protected void  setCreateDateTime(){
         this.createDate=ZonedDateTime.now();
+        this.lastModify=ZonedDateTime.now();
     }
 
 }

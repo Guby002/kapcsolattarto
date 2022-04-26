@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi.service;
 
-import hu.futureofmedia.task.contactsapi.DTO.CompanyDTO;
 import hu.futureofmedia.task.contactsapi.entities.Company;
 import hu.futureofmedia.task.contactsapi.exceptions.RecordNotFoundException;
 import hu.futureofmedia.task.contactsapi.repositories.CompanyRepository;

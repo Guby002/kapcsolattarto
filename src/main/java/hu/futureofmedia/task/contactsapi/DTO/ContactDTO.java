@@ -1,6 +1,5 @@
 package hu.futureofmedia.task.contactsapi.DTO;
 
-import hu.futureofmedia.task.contactsapi.entities.Company;
 import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.validator.ContactNumberConstraint;
 import lombok.AllArgsConstructor;
