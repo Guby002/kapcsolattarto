@@ -2,17 +2,8 @@ package hu.futureofmedia.task.contactsapi.service;
 
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
-import hu.futureofmedia.task.contactsapi.DTO.CompanyDTO;
-import hu.futureofmedia.task.contactsapi.DTO.ContactDTO;
-import hu.futureofmedia.task.contactsapi.datafetcher.ContactDataFetcher;
-import hu.futureofmedia.task.contactsapi.datafetcher.TenContactDataFetcher;
-import hu.futureofmedia.task.contactsapi.entities.Company;
-import hu.futureofmedia.task.contactsapi.entities.Contact;
-import hu.futureofmedia.task.contactsapi.entities.Status;
+import graphql.schema.idl.*;
+import hu.futureofmedia.task.contactsapi.datafetcher.*;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,8 +13,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
-import java.time.ZonedDateTime;
-import java.util.stream.Stream;
 
 import static java.time.ZonedDateTime.now;
 
@@ -33,7 +22,7 @@ public class GraphQLService {
     @Autowired
     ContactRepository contactRepository;
 
-    @Value("classpath:query.graphql")
+    @Value("classpath:query.graphqls")
     Resource resource;
 
     private GraphQL graphQL;
@@ -41,7 +30,12 @@ public class GraphQLService {
     private TenContactDataFetcher tenContactDataFetcher;
     @Autowired
     private ContactDataFetcher contactDataFetcher;
-
+    @Autowired
+    private CreateContactDataFetcher createContactDataFetcher;
+    @Autowired
+    private ContactUpdateDataFetcher contactUpdateDataFetcher;
+    @Autowired
+    private DeleteContactDataFetcher deleteContactDataFetcher;
     // load schema at application start up
     @PostConstruct
     private void loadSchema() throws IOException {
@@ -79,9 +73,13 @@ public class GraphQLService {
 
     private RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
-                .type("Query", typeWiring -> typeWiring
+                .type("ContactQueries", typeWiring -> typeWiring
                         .dataFetcher("allContact", tenContactDataFetcher)
                         .dataFetcher("contact", contactDataFetcher))
+                .type(TypeRuntimeWiring.newTypeWiring("ContactMutations")
+                        .dataFetcher("newContact", createContactDataFetcher)
+                        .dataFetcher("updateContact", contactUpdateDataFetcher)
+                        .dataFetcher("deleteContact", deleteContactDataFetcher))
                 .build();
     }
 
