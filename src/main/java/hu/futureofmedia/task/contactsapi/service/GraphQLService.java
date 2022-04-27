@@ -40,8 +40,6 @@ public class GraphQLService {
     @PostConstruct
     private void loadSchema() throws IOException {
 
-        //Load Books into the Book Repository
-        loadDataIntoHSQL();
 
         // get the schema
         File schemaFile = resource.getFile();
@@ -52,29 +50,11 @@ public class GraphQLService {
         graphQL = GraphQL.newGraphQL(schema).build();
     }
 
-    private void loadDataIntoHSQL() {
-        /*Company company = new Company(1L, "as");
-        ZonedDateTime d2 = now();
-        ZonedDateTime d1 = now();
-        Stream.of(
-                new Contact(5L, "1Nagyon", "Almos",
-                        "ha@hah.hu", "11231120", company,
-                        "ha", Status.ACTIVE, d1, d2),
-                new Contact(6L, "2Nagyon", "Almos",
-                        "ha@hah.hu", "11231120", company,
-                        "ha", Status.ACTIVE, d1, d2),
-                new Contact(7L, "3Nagyon", "Almos",
-                        "ha@hah.hu", "11231120", company,
-                        "ha", Status.ACTIVE, d1, d2)
-        ).forEach(contact -> {
-            contactRepository.save(contact);
-        });*/
-    }
 
     private RuntimeWiring buildRuntimeWiring() {
         return RuntimeWiring.newRuntimeWiring()
                 .type("ContactQueries", typeWiring -> typeWiring
-                        .dataFetcher("allContact", tenContactDataFetcher)
+                        .dataFetcher("findTenForUser", tenContactDataFetcher)
                         .dataFetcher("contact", contactDataFetcher))
                 .type(TypeRuntimeWiring.newTypeWiring("ContactMutations")
                         .dataFetcher("newContact", createContactDataFetcher)

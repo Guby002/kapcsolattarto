@@ -24,6 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-devtools'
     implementation 'com.auth0:java-jwt:3.19.1'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    testImplementation 'systems.manifold:manifold-graphql-test:2022.1.8'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2',
             'io.jsonwebtoken:jjwt-jackson:0.11.2',
             'org.apache.commons:commons-lang3:3.12.0'
