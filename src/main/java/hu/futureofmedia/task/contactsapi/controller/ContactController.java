@@ -32,21 +32,21 @@ public class ContactController {
     Logger logger = LoggerFactory.getLogger(ContactController.class);
 
     @GetMapping("/foruser")
-//    @PreAuthorize("hasAuthority('LIST')")
+    @PreAuthorize("hasAuthority('LIST')")
     public List<ContactForListDTO> findTenForUser(@RequestParam("pageNo") int pageNo){
         logger.info("10 Contact/page GetMapping");
         return contactService.findTenForUser(pageNo);
     }
 
     @GetMapping("/foruser/{id}")
-  //  @PreAuthorize("hasAuthority('LIST')")
+    @PreAuthorize("hasAuthority('LIST')")
     public ContactDTO findContactById(@PathVariable("id") Long id) throws RecordNotFoundException {
         logger.info("single Contact GetMapping");
         return contactService.findById(id);
     }
 
     @DeleteMapping("/{id}")
- //   @PreAuthorize("hasAuthority('DELETE')")
+    @PreAuthorize("hasAuthority('DELETE')")
     public void delete(@PathVariable Long id) throws SQLException {
         logger.info("single Contact DeleteMapping");
         contactService.delete(id);
@@ -54,14 +54,14 @@ public class ContactController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-   // @PreAuthorize("hasAuthority('CREATE')")
+    @PreAuthorize("hasAuthority('CREATE')")
     public Long createContractor(@Valid @RequestBody ContactDTO contactDTO){
         logger.info("single Contact PostMapping");
         return contactService.save(contactDTO);
     }
 
     @PutMapping("{id}")
-   // @PreAuthorize("hasAuthority('MODIFY')")
+    @PreAuthorize("hasAuthority('MODIFY')")
     public Long updateContactor(@PathVariable ("id") Long id,@Valid @RequestBody ContactDTO contactDTO) throws SQLException {
         logger.info("single Contact PutMapping");
         return contactService.update(id,contactDTO);

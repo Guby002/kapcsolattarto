@@ -6,12 +6,16 @@ import hu.futureofmedia.task.contactsapi.entities.Contact;
 import hu.futureofmedia.task.contactsapi.entities.Status;
 import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 import hu.futureofmedia.task.contactsapi.service.CompanyService;
+import hu.futureofmedia.task.contactsapi.service.GraphQLService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
 @Component
 public class CreateContactDataFetcher implements DataFetcher<String> {
+    Logger logger =  LoggerFactory.getLogger(GraphQLService.class);
     private final CompanyService companyService;
     private final ContactRepository contactRepository;
 
@@ -24,8 +28,8 @@ public class CreateContactDataFetcher implements DataFetcher<String> {
         contact.setCompany(companyService.getById(Long.valueOf(Long.valueOf(l))));
         contact.setComment("ha");
         contact.setFirstName(environment.getArgument("firstName"));
-        System.out.println("jjjjj");
         contact.setSecondName(environment.getArgument("secondName"));
+        logger.info("Contact created");
         return contactRepository.save(contact).getId().toString();
     }
 }
