@@ -3,6 +3,7 @@ package hu.futureofmedia.task.contactsapi.service;
 import hu.futureofmedia.task.contactsapi.DTO.LoginDTO;
 import hu.futureofmedia.task.contactsapi.DTO.RegisterUserDTO;
 import hu.futureofmedia.task.contactsapi.DTO.UserDTO;
+import hu.futureofmedia.task.contactsapi.DTO.UserForListDTO;
 import hu.futureofmedia.task.contactsapi.entities.*;
 import hu.futureofmedia.task.contactsapi.exceptions.IncorrectEmailException;
 import hu.futureofmedia.task.contactsapi.exceptions.IncorrectUserNameException;
@@ -46,9 +47,12 @@ public class UserServiceImpl implements UserService{
     public JwtResponse login(LoginDTO loginDTO) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = jwtTokenUtil.generateJwtToken(authentication);
 
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
+        String jwt = jwtTokenUtil.generateJwtToken(authentication);
+        logger.info(jwt);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
@@ -67,7 +71,12 @@ public class UserServiceImpl implements UserService{
         userRepository.delete(user);
         logger.debug("User deleted");
     }
-
+    @Override
+    @Transactional
+    public List<UserForListDTO> loadUsers(){
+        List<User> listData = userRepository.findAll();
+        return listData.stream().map(userMapper::userToUserForListDTO).collect(Collectors.toList());
+    }
     @Override
     @Transactional
     public String userRegistration(RegisterUserDTO newUserDTO) throws IncorrectUserNameException, IncorrectEmailException {

@@ -28,7 +28,7 @@ public class ContactDTO {
     private String phoneNumber;
     @NotNull(message = "validation.required.company")
     @Valid
-    private CompanyDTO companyDTO;
+    private Long companyId;
     private String comment;
     private Status status;
     private ZonedDateTime createDate;

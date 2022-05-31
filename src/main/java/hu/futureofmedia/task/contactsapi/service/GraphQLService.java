@@ -14,8 +14,6 @@ import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 
-import static java.time.ZonedDateTime.now;
-
 @Service
 public class GraphQLService {
 

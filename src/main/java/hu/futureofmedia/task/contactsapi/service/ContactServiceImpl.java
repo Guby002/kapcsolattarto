@@ -36,7 +36,7 @@ public class ContactServiceImpl implements ContactService  {
     public Long save(ContactDTO contactDTO){
         contactDTO.setStatus(Status.ACTIVE);
         Contact contact = contactMapper.toContact(contactDTO);
-        contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
+        contact.setCompany(companyService.getById(contactDTO.getCompanyId()));
         var id = contactRepository.save(contact).getId();
         logger.debug("New contactor saved ,contact:{}" ,contact);
         jmsProducer.send(new MailDTO(contact.getCompany().getName(),contact.getEmail()));
@@ -50,7 +50,7 @@ public class ContactServiceImpl implements ContactService  {
     public Long update(Long id , ContactDTO contactDTO){
         Contact contact = findContact(id);
         contactMapper.updateContactFromContactDTO(contactDTO,contact);
-        contact.setCompany(companyService.getById(contactDTO.getCompanyDTO().getId()));
+        contact.setCompany(companyService.getById(contactDTO.getCompanyId()));
         contactRepository.save(contact);
         logger.debug("contactDTO: {},contact: {}",contactDTO,contact);
         return id;
@@ -71,9 +71,11 @@ public class ContactServiceImpl implements ContactService  {
         if( pageNo< 1 ) {
             pageNo=1;
         }
-        logger.debug("Find 10 contactor for a page");
+        logger.debug(pageNo+"Find 10 contactor for a page");
         Pageable pageSortByName = PageRequest.of(pageNo-1 ,10,Sort.by("firstName"));
         Page<Contact> listData = contactRepository.findAllByStatus(Status.ACTIVE,pageSortByName);
+
+        logger.info(listData.toList().toString());
         return listData.stream().map(contactMapper::toContactForListDto).collect(Collectors.toList());
     }
 

@@ -8,7 +8,6 @@ import hu.futureofmedia.task.contactsapi.repositories.ContactRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Component

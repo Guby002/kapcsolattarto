@@ -26,6 +26,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 			String invalidUserNameOrPassword =( "Incorrect account or password");
 			httpServletResponse.getOutputStream().write(new ObjectMapper()
 					.writeValueAsBytes(invalidUserNameOrPassword));
+			logger.error(invalidUserNameOrPassword);
 		} else {
 			httpServletResponse.sendError(HttpServletResponse.SC_UNAUTHORIZED,
 					"Unauthorized access");
