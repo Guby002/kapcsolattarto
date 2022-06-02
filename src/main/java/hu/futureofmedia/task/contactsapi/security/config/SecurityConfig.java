@@ -7,8 +7,12 @@ import hu.futureofmedia.task.contactsapi.security.JwtTokenFilter;
 import hu.futureofmedia.task.contactsapi.security.JwtTokenUtil;
 import hu.futureofmedia.task.contactsapi.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,6 +21,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+
+import java.util.Arrays;
 
 
 @Configuration
@@ -47,7 +56,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthEntryPointJwt unauthorizedHandler;
     private final Encoder encoder;
 
+    @Bean
+    public FilterRegistrationBean processCorsFilter() {
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("http://localhost:4200");
+        config.setAllowedHeaders(Arrays.asList("Origin", "Access-Control-Allow-Origin", "Content-Type",
+                "Accept", "Authorization", "Origin, Accept", "X-Requested-With","skip",
+                "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        config.setExposedHeaders(Arrays.asList("Origin", "Content-Type", "Accept", "Authorization","skip",
+                "Access-Control-Allow-Origin", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        source.registerCorsConfiguration("/**", config);
 
+
+        final FilterRegistrationBean bean = new FilterRegistrationBean(new CorsFilter(source));
+        bean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return bean;
+    }
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
         authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(encoder.passwordEncoder());
@@ -59,7 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http.csrf().disable().cors().disable()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler)
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -67,8 +94,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 //PUBLIC ENDPOINTS
                 .antMatchers(AUTH_WHITELIST).permitAll()
-                .antMatchers("/api/auth/login","/api/auth/register").permitAll()
-                .antMatchers("/api/graph","/api/graph/**").permitAll()
+                .antMatchers("/api/auth/**","/api/auth/register/**").permitAll()
+                .antMatchers("/api/graph","/api/graph/**,/home/**").permitAll()
                 .anyRequest().authenticated();
         http.addFilterBefore(new JwtTokenFilter(jwtTokenUtil, userDetailsService), UsernamePasswordAuthenticationFilter.class);
     }
