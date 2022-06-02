@@ -16,5 +16,10 @@ public interface ContactMapper {
         contactForListDTO.setName(contact.getFirstName()+" "+contact.getSecondName());
         contactForListDTO.setCompanyName(contact.getCompany().getName());
     }
+
+    @Mapping(ignore = true, target = "createDate")
+    @Mapping(ignore = true, target = "status")
+    @Mapping(ignore = true, target = "lastModify")
+    @Mapping(ignore = true, target = "comment")
     void updateContactFromContactDTO(ContactDTO contactDTO, @MappingTarget Contact contact);
 }

@@ -45,7 +45,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ RecordNotFoundException.class, SQLException.class, IOException.class})
     protected ResponseEntity<Object> handleNotFound(
             Exception ex, WebRequest request) {
-        logger.error("Can't found the record");
+        logger.error("Can't found the record "+ ex.getMessage().toString());
         return handleExceptionInternal(ex, "Not found",
                 new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }

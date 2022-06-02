@@ -61,7 +61,7 @@ public class ContactController {
         return contactService.save(contactDTO);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('MODIFY')")
     public Long updateContactor(@PathVariable ("id") Long id,@Valid @RequestBody ContactDTO contactDTO) throws SQLException {
         logger.info("single Contact PutMapping");
